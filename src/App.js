@@ -56,6 +56,10 @@ const GlobalStyle = createGlobalStyle`
       padding-bottom: 208px;
     }
   }
+
+  a {
+    text-decoration: none;
+  }
 `;
 
 function App() {
