@@ -1,9 +1,9 @@
-import { useContext, useState } from 'react';
-import styled from 'styled-components';
+import { useContext, useState } from "react";
+import styled from "styled-components";
 
-import add from './add.png';
-import minus from './minus.png';
-import CartContext from '../../contexts/CartContext';
+import add from "./add.png";
+import minus from "./minus.png";
+import CartContext from "../../contexts/CartContext";
 
 const Option = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const OptionName = styled.div`
     font-size: 14px;
     letter-spacing: 2.8px;
 
-    ${(props) => props.hideOnMobile && 'display: none;'}
+    ${(props) => props.hideOnMobile && "display: none;"}
   }
 `;
 
@@ -35,7 +35,7 @@ const Color = styled.div`
   cursor: pointer;
   margin-left: 21px;
   background-color: ${(props) => props.$colorCode};
-  ${(props) => props.$isSelected && 'outline: 1px solid #979797;'}
+  ${(props) => props.$isSelected && "outline: 1px solid #979797;"}
 
   & + & {
     margin-left: 15px;
@@ -45,16 +45,16 @@ const Color = styled.div`
 const Size = styled.div`
   width: 34px;
   height: 34px;
-  background-color: ${(props) => (props.$isSelected ? 'black' : '#ececec')};
-  color: ${(props) => (props.$isSelected ? 'white' : '#3f3a3a')};
+  background-color: ${(props) => (props.$isSelected ? "black" : "#ececec")};
+  color: ${(props) => (props.$isSelected ? "white" : "#3f3a3a")};
   border-radius: 50%;
   font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 22px;
-  cursor: ${(props) => (props.$isDisabled ? ' not-allowed' : 'pointer')};
-  ${(props) => props.$isDisabled && 'opacity: 0.25;'}
+  cursor: ${(props) => (props.$isDisabled ? " not-allowed" : "pointer")};
+  ${(props) => props.$isDisabled && "opacity: 0.25;"}
 
   & + & {
     margin-left: 20px;
@@ -134,13 +134,14 @@ function ProductVariants({ product }) {
 
   function addToCart() {
     if (!selectedSize) {
-      window.alert('請選擇尺寸');
+      window.alert("請選擇尺寸");
       return;
     }
 
     cart.addItem({
       color: product.colors.find((color) => color.code === selectedColorCode),
       id: product.id,
+      isStylish: true,
       image: product.main_image,
       name: product.title,
       price: product.price,
@@ -207,7 +208,7 @@ function ProductVariants({ product }) {
         </QuantitySelector>
       </Option>
       <AddToCart onClick={addToCart}>
-        {selectedSize ? '加入購物車' : '請選擇尺寸'}
+        {selectedSize ? "加入購物車" : "請選擇尺寸"}
       </AddToCart>
     </>
   );
