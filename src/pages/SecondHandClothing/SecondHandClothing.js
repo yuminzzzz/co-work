@@ -1,17 +1,25 @@
-import Products from "../Home/Products";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-const Carousel = styled.div`
-  width: 100%;
+const CarouselWrapper = styled.div`
   height: 400px;
+  position: relative;
+
+  @media screen and (max-width: 1279px) {
+    height: 200px;
+  }
+`;
+
+const Carousel = styled(Link)`
+  width: 100%;
+  height: 100%;
+  position: absolute;
   background-size: cover;
   background-position: center;
   background-image: url("https://doqvf81n9htmm.cloudfront.net/data/crop_article/25991/96-f.jpg_1140x855.jpg");
   text-decoration: none;
-  color: #070707;
   @media screen and (max-width: 1279px) {
-    height: 200px;
-    background-position: center 30%;
+    background-position: center 40%;
   }
 `;
 
@@ -42,13 +50,14 @@ const BiddingTitle = styled.h1`
   letter-spacing: 2px;
 `;
 
-const BiddingThing = styled.div`
+const BiddingThing = styled(Link)`
   flex-basis: 300px;
   flex-shrink: 0;
   margin-right: 25px;
   margin-top: 15px;
   border: solid 1px rgb(241, 241, 241);
   border-radius: 10px;
+  color: black;
 `;
 
 const DeadLine = styled.div`
@@ -75,6 +84,7 @@ const Bidtext = styled.p`
   margin-top: 15px;
   font-size: 18px;
 `;
+
 const BidButton = styled.div`
   margin-top: 20px;
   width: 100%;
@@ -91,6 +101,7 @@ const BidButton = styled.div`
     background-color: #b98714;
   }
 `;
+
 const Hr = styled.div`
   height: 1px;
   width: 100%;
@@ -106,13 +117,14 @@ const ProductWrapper = styled.div`
   display: flex;
 `;
 
-const ProductCard = styled.div`
+const ProductCard = styled(Link)`
   cursor: pointer;
   margin-right: 20px;
   font-size: 20px;
   font-weight: 400;
   line-height: 24px;
   letter-spacing: 4px;
+  color: black;
   &:nth-child(3n) {
     margin-right: 0;
   }
@@ -133,7 +145,7 @@ const CardText = styled.p`
 
 const CardProduct = () => {
   return (
-    <ProductCard>
+    <ProductCard to="#">
       <CardImg src="https://images.unsplash.com/photo-1484186304838-0bf1a8cff81c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80" />
       <CardTitle>純色輕薄百搭襯衫</CardTitle>
       <CardText>
@@ -145,7 +157,7 @@ const CardProduct = () => {
 
 const BiddingProduct = () => {
   return (
-    <BiddingThing>
+    <BiddingThing to="#">
       <DeadLine>8/15 22:00 結標</DeadLine>
       <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
       <BidTitle>大容量運動水壺</BidTitle>
@@ -166,10 +178,8 @@ const BiddingProduct = () => {
         </Bidtext>
         <Bidtext>26 次出價</Bidtext>
       </div>
-      <Bidtext>剩餘時間</Bidtext>
-      <a href="#">
-        <BidButton>我要出價</BidButton>
-      </a>
+      <Bidtext style={{ marginLeft: "15px" }}>剩餘時間</Bidtext>
+      <BidButton to="#">我要出價</BidButton>
     </BiddingThing>
   );
 };
@@ -177,9 +187,9 @@ const BiddingProduct = () => {
 function SecondHandClothing() {
   return (
     <>
-      <a href="#">
-        <Carousel></Carousel>
-      </a>
+      <CarouselWrapper>
+        <Carousel to="#"></Carousel>
+      </CarouselWrapper>
 
       <Wrapper>
         <BiddingTitle>二手服飾競標專區</BiddingTitle>
