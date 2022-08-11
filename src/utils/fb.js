@@ -17,10 +17,10 @@ const fb = {
   },
   init() {
     window.FB.init({
-      appId: '700590737403665',
+      appId: "1029060851144824",
       cookie: true,
       xfbml: true,
-      version: 'v10.0',
+      version: "v14.0",
     });
   },
   getLoginStatus() {

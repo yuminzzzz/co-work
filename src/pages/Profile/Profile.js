@@ -15,24 +15,24 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 
-// const Title = styled.div`
-//   padding-bottom: 16px;
-//   border-bottom: 1px solid #979797;
-//   font-size: 24px;
-//   font-weight: bold;
-// `;
+const Title = styled.div`
+  padding-bottom: 16px;
+  border-bottom: 1px solid #979797;
+  font-size: 24px;
+  font-weight: bold;
+`;
 
-// const Photo = styled.img`
-//   margin-top: 24px;
-// `;
+const Photo = styled.img`
+  margin-top: 24px;
+`;
 
-// const Content = styled.div`
-//   margin-top: 24px;
-// `;
+const Content = styled.div`
+  margin-top: 24px;
+`;
 
-// const LogoutButton = styled.button`
-//   margin-top: 24px;
-// `;
+const LogoutButton = styled.button`
+  margin-top: 24px;
+`;
 
 const LoginContainer = styled.div`
   position: relative;
@@ -128,7 +128,7 @@ const ReturnLoginButton = styled.div`
 `;
 
 function Profile() {
-  const [profile, setProfile] = useState();
+  // const [profile, setProfile] = useState();
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
@@ -198,8 +198,11 @@ function Profile() {
         method: "POST",
       }
     );
-    console.log(await response.json());
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
   };
+
   const login = async () => {
     const inputCheck = Object.values(valid).filter(
       (item) => item !== ""
@@ -221,7 +224,29 @@ function Profile() {
         method: "POST",
       }
     );
-    console.log(await response.json());
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
+  };
+
+  const fbLogin = async () => {
+    const data = {
+      provider: "facebook",
+      access_token: await getJwtToken(),
+    };
+    const response = await fetch(
+      "https://claudia-teng.com/api/1.0/user/signin",
+      {
+        body: JSON.stringify(data),
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        method: "POST",
+      }
+    );
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
   };
 
   useEffect(() => {
@@ -231,26 +256,6 @@ function Profile() {
       password: "",
     });
   }, [isRegisterPage]);
-
-  useEffect(() => {
-    async function getProfile() {
-      let jwtToken = window.localStorage.getItem("jwtToken");
-
-      if (!jwtToken) {
-        try {
-          jwtToken = await getJwtToken();
-        } catch (e) {
-          window.alert(e.message);
-          return;
-        }
-      }
-      window.localStorage.setItem("jwtToken", jwtToken);
-
-      const { data } = await api.getProfile(jwtToken);
-      setProfile(data);
-    }
-    getProfile();
-  }, []);
   return (
     <Wrapper>
       <LoginContainer>
@@ -276,7 +281,9 @@ function Profile() {
               </InputContainer>
             </InputSection>
             <LoginButton onClick={login}>登入</LoginButton>
-            <FacebookLoginButton>以facebook登入</FacebookLoginButton>
+            <FacebookLoginButton onClick={fbLogin}>
+              以facebook登入
+            </FacebookLoginButton>
             <Divider></Divider>
             <RegisterButton onClick={() => setIsRegisterPage(true)}>
               建立新帳號
@@ -317,8 +324,7 @@ function Profile() {
           </>
         )}
       </LoginContainer>
-      {/* <Title>會員基本資訊</Title>
-      {profile && (
+      {/* {profile && (
         <>
           <Photo src={profile.picture} />
           <Content>{profile.name}</Content>
