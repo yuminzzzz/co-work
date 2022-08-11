@@ -1,5 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import styled from "styled-components";
 
 import logo from "./logo.png";
@@ -239,7 +244,7 @@ const categories = [
     displayText: "配件",
   },
   {
-    name: "second-hand",
+    name: "secondhandclothing",
     displayText: "二手衣專區",
   },
 ];
@@ -249,6 +254,9 @@ function Header() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
+  const location = useLocation();
+  const secondHandCategory = location.pathname.split("/")[1];
+  console.log(secondHandCategory);
   const { getItems } = useContext(CartContext);
 
   useEffect(() => {
@@ -260,12 +268,11 @@ function Header() {
       <Logo to="/" />
       <CategoryLinks>
         {categories.map(({ name, displayText }, index) =>
-          name === "second-hand" ? (
+          name === "secondhandclothing" ? (
             <CategoryLink
               style={{ letterSpacing: "15px" }}
-              to={`/?category=${name}`}
-              target="_blank"
-              $isActive={category === name}
+              to={`/secondhandclothing`}
+              $isActive={secondHandCategory === name}
               key={index}
             >
               {displayText}

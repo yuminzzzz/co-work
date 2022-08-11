@@ -18,7 +18,7 @@ const Carousel = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   margin: 0 auto;
-  margin-top: 70px;
+  margin-top: 55px;
   margin-bottom: 60px;
   max-width: 1160px;
   * {
@@ -35,6 +35,7 @@ const BiddingWrapper = styled.div`
 `;
 
 const BiddingTitle = styled.h1`
+  margin-top: 20px;
   font-size: 25px;
   margin-bottom: 10px;
   font-weight: bold;
@@ -130,6 +131,7 @@ function SecondHandClothing() {
               </Bidtext>
               <Bidtext>26 次出價</Bidtext>
             </div>
+            <Bidtext>剩餘時間</Bidtext>
             <a href="#">
               <BidButton>我要出價</BidButton>
             </a>
@@ -156,6 +158,7 @@ function SecondHandClothing() {
               </Bidtext>
               <Bidtext>26 次出價</Bidtext>
             </div>
+            <Bidtext>剩餘時間</Bidtext>
             <a href="#">
               <BidButton>我要出價</BidButton>
             </a>
@@ -182,6 +185,7 @@ function SecondHandClothing() {
               </Bidtext>
               <Bidtext>26 次出價</Bidtext>
             </div>
+            <Bidtext>剩餘時間</Bidtext>
             <a href="#">
               <BidButton>我要出價</BidButton>
             </a>
@@ -208,6 +212,7 @@ function SecondHandClothing() {
               </Bidtext>
               <Bidtext>26 次出價</Bidtext>
             </div>
+            <Bidtext>剩餘時間</Bidtext>
             <a href="#">
               <BidButton>我要出價</BidButton>
             </a>
@@ -234,11 +239,14 @@ function SecondHandClothing() {
               </Bidtext>
               <Bidtext>26 次出價</Bidtext>
             </div>
+            <Bidtext>剩餘時間</Bidtext>
             <a href="#">
               <BidButton>我要出價</BidButton>
             </a>
           </BiddingThing>
         </BiddingWrapper>
+        <BiddingTitle style={{ marginTop: "35px" }}>所有二手商品</BiddingTitle>
+        <Hr />
       </Wrapper>
     </>
   );
