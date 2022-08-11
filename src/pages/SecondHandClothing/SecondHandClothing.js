@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
+import api from "../../utils/api";
+import moment from "moment";
 
 const CarouselWrapper = styled.div`
   height: 400px;
@@ -155,36 +158,65 @@ const CardProduct = () => {
   );
 };
 
-const BiddingProduct = () => {
-  return (
-    <BiddingThing to="#">
-      <DeadLine>8/15 22:00 結標</DeadLine>
-      <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-      <BidTitle>大容量運動水壺</BidTitle>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingLeft: "15px",
-          paddingRight: "15px",
-        }}
-      >
-        <Bidtext>
-          目前出價{" "}
-          <span style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}>
-            $10524
-          </span>
-        </Bidtext>
-        <Bidtext>26 次出價</Bidtext>
-      </div>
-      <Bidtext style={{ marginLeft: "15px" }}>剩餘時間</Bidtext>
-      <BidButton to="#">我要出價</BidButton>
-    </BiddingThing>
+const useCountdown = (targetDate) => {
+  const countDownDate = new Date(targetDate).getTime();
+
+  const [countDown, setCountDown] = useState(
+    countDownDate - new Date().getTime()
   );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountDown(countDownDate - new Date().getTime());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [countDownDate]);
+
+  return getReturnValues(countDown);
+};
+const getReturnValues = (countDown) => {
+  // calculate time left
+  const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+  const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
+
+  return [days, hours, minutes, seconds];
 };
 
 function SecondHandClothing() {
+  const [auctions, setAuctions] = useState([]);
+  // useRef
+
+  useEffect(() => {
+    async function getAuctionsList() {
+      const { data } = await api.getAuctionsList();
+      console.log(data);
+      setAuctions(data);
+    }
+    getAuctionsList();
+  }, []);
+
+  const [days, hours, minutes, seconds] = useCountdown(
+    "2022-08-20T04:40:39.000Z"
+  );
+  auctions.forEach((auc) => {
+    auc.lastTime = [days, hours, minutes, seconds];
+  });
+
+  // function timer(count) {
+  //   let countDown = {
+  //     days: parseInt(count / 1000 / 60 / 60 / 24, 10),
+  //     hours: parseInt((count / 1000 / 60 / 60) % 24, 10),
+  //     minutes: parseInt((count / 1000 / 60) % 60, 10),
+  //     seconds: parseInt((count / 1000) % 60, 10),
+  //   };
+  //   return countDown;
+  // }
+
   return (
     <>
       <CarouselWrapper>
@@ -195,11 +227,49 @@ function SecondHandClothing() {
         <BiddingTitle>二手服飾競標專區</BiddingTitle>
         <Hr />
         <BiddingWrapper>
-          <BiddingProduct />
-          <BiddingProduct />
-          <BiddingProduct />
-          <BiddingProduct />
-          <BiddingProduct />
+          {auctions.map(
+            ({ id, title, currentPrice, deadline, image, count, lastTime }) => (
+              <BiddingThing to="#" key={id}>
+                <DeadLine>
+                  {new Date(Date.parse(deadline)).getMonth() + 1}/
+                  {new Date(Date.parse(deadline)).getDate()}{" "}
+                  {new Date(Date.parse(deadline)).getHours()}:
+                  {new Date(Date.parse(deadline)).getMinutes()}:
+                  {new Date(Date.parse(deadline)).getSeconds()} 結標
+                </DeadLine>
+                <BidImg src={image} />
+                <BidTitle>{title}</BidTitle>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingLeft: "15px",
+                    paddingRight: "15px",
+                  }}
+                >
+                  <Bidtext>
+                    目前出價
+                    <span
+                      style={{
+                        color: "red",
+                        fontSize: "25px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ${currentPrice}
+                    </span>
+                  </Bidtext>
+                  <Bidtext>{count} 次出價</Bidtext>
+                </div>
+                <Bidtext style={{ marginLeft: "15px" }}>
+                  剩餘時間 {lastTime[0]} 天 {lastTime[1]} 小時
+                  {lastTime[2]} 分鐘 {lastTime[3]} 秒
+                </Bidtext>
+                <BidButton to="#">我要出價</BidButton>
+              </BiddingThing>
+            )
+          )}
         </BiddingWrapper>
         <BiddingTitle style={{ marginTop: "35px" }}>所有二手商品</BiddingTitle>
         <Hr />
