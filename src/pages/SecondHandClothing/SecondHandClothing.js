@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   margin-bottom: 60px;
   max-width: 1160px;
   * {
-    outline: solid 1px black;
+    ${"" /* outline: solid 1px black; */}
   }
 `;
 
@@ -100,9 +100,10 @@ const Hr = styled.div`
 const ProductWrapper = styled.div`
   flex-wrap: wrap;
   max-width: 1160px;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin: 0 auto;
-  margin-top: 70px;
+  margin-top: 20px;
+  display: flex;
 `;
 
 const ProductCard = styled.div`
@@ -112,11 +113,35 @@ const ProductCard = styled.div`
   font-weight: 400;
   line-height: 24px;
   letter-spacing: 4px;
+  &:nth-child(3n) {
+    margin-right: 0;
+  }
 `;
 
-const CardImg = styled.img``;
+const CardImg = styled.img`
+  width: 360px;
+  height: 360px;
+`;
 
-const CardText = styled.p``;
+const CardTitle = styled.h3`
+  margin-top: 15px;
+  margin-bottom: 15px;
+`;
+const CardText = styled.p`
+  margin-bottom: 64px;
+`;
+
+const CardProduct = () => {
+  return (
+    <ProductCard>
+      <CardImg src="https://images.unsplash.com/photo-1484186304838-0bf1a8cff81c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80" />
+      <CardTitle>純色輕薄百搭襯衫</CardTitle>
+      <CardText>
+        TWD.<span>799</span>
+      </CardText>
+    </ProductCard>
+  );
+};
 
 const BiddingProduct = () => {
   return (
@@ -169,11 +194,12 @@ function SecondHandClothing() {
         <BiddingTitle style={{ marginTop: "35px" }}>所有二手商品</BiddingTitle>
         <Hr />
         <ProductWrapper>
-          <ProductCard>
-            <CardImg />
-            <CardText></CardText>
-            <CardText></CardText>
-          </ProductCard>
+          <CardProduct />
+          <CardProduct />
+          <CardProduct />
+          <CardProduct />
+          <CardProduct />
+          <CardProduct />
         </ProductWrapper>
       </Wrapper>
     </>
