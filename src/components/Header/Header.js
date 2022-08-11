@@ -1,28 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { useContext, useEffect, useState } from "react";
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
+import styled from "styled-components";
 
-import logo from './logo.png';
-import search from './search.png';
-import cart from './cart.png';
-import cartMobile from './cart-mobile.png';
-import profile from './profile.png';
-import profileMobile from './profile-mobile.png';
-import CartContext from '../../contexts/CartContext';
+import logo from "./logo.png";
+import search from "./search.png";
+import cart from "./cart.png";
+import cartMobile from "./cart-mobile.png";
+import profile from "./profile.png";
+import profileMobile from "./profile-mobile.png";
+import CartContext from "../../contexts/CartContext";
 
 const Wrapper = styled.div`
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
+  z-index: 1000;
   height: 140px;
   width: 100%;
   padding: 0 54px 0 60px;
   border-bottom: 40px solid #313538;
-  z-index: 99;
   background-color: white;
   display: flex;
   align-items: center;
   font-family: PingFangTC;
+  width: 100%;
+  max-width: 1920px;
 
   @media screen and (max-width: 1279px) {
     height: 52px;
@@ -66,14 +72,14 @@ const CategoryLink = styled(Link)`
   padding-right: 11px;
   position: relative;
   text-decoration: none;
-  color: ${(props) => (props.$isActive ? '#8b572a' : '#3f3a3a')};
+  color: ${(props) => (props.$isActive ? "#8b572a" : "#3f3a3a")};
 
   @media screen and (max-width: 1279px) {
     font-size: 16px;
     letter-spacing: normal;
     padding: 0;
     text-align: center;
-    color: ${(props) => (props.$isActive ? 'white' : '#828282')};
+    color: ${(props) => (props.$isActive ? "white" : "#828282")};
     line-height: 50px;
     flex-grow: 1;
   }
@@ -87,7 +93,7 @@ const CategoryLink = styled(Link)`
   }
 
   & + &::before {
-    content: '|';
+    content: "|";
     position: absolute;
     left: 0;
     color: #3f3a3a;
@@ -167,7 +173,7 @@ const PageLink = styled(Link)`
 
   & + &::before {
     @media screen and (max-width: 1279px) {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       width: 1px;
@@ -226,47 +232,65 @@ const PageLinkText = styled.div`
 
 const categories = [
   {
-    name: 'women',
-    displayText: '女裝',
+    name: "women",
+    displayText: "女裝",
   },
   {
-    name: 'men',
-    displayText: '男裝',
+    name: "men",
+    displayText: "男裝",
   },
   {
-    name: 'accessories',
-    displayText: '配件',
+    name: "accessories",
+    displayText: "配件",
+  },
+  {
+    name: "secondhandclothing",
+    displayText: "二手衣專區",
   },
 ];
 
 function Header() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const category = searchParams.get('category');
+  const category = searchParams.get("category");
+  const location = useLocation();
+  const secondHandCategory = location.pathname.split("/")[1];
+  console.log(secondHandCategory);
   const { getItems } = useContext(CartContext);
 
   useEffect(() => {
-    if (category) setInputValue('');
+    if (category) setInputValue("");
   }, [category]);
 
   return (
     <Wrapper>
       <Logo to="/" />
       <CategoryLinks>
-        {categories.map(({ name, displayText }, index) => (
-          <CategoryLink
-            to={`/?category=${name}`}
-            $isActive={category === name}
-            key={index}
-          >
-            {displayText}
-          </CategoryLink>
-        ))}
+        {categories.map(({ name, displayText }, index) =>
+          name === "secondhandclothing" ? (
+            <CategoryLink
+              style={{ letterSpacing: "15px" }}
+              to={`/secondhandclothing`}
+              $isActive={secondHandCategory === name}
+              key={index}
+            >
+              {displayText}
+            </CategoryLink>
+          ) : (
+            <CategoryLink
+              to={`/?category=${name}`}
+              $isActive={category === name}
+              key={index}
+            >
+              {displayText}
+            </CategoryLink>
+          )
+        )}
       </CategoryLinks>
       <SearchInput
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             navigate(`/?keyword=${inputValue}`);
           }
         }}
