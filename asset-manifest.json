@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.js": "/co-work/static/js/main.183d6596.js",
+    "static/media/PingFang-TC-Thin-2.otf": "/co-work/static/media/PingFang-TC-Thin-2.a44c12820c7ce36b8aee.otf",
+    "static/media/PingFang-TC-Regular-2.otf": "/co-work/static/media/PingFang-TC-Regular-2.f72d2153d84aeafecae8.otf",
+    "static/media/NotoSansTC-Bold.otf": "/co-work/static/media/NotoSansTC-Bold.ad1bddadd1f6b41fe4e7.otf",
+    "static/media/NotoSansTC-Regular.otf": "/co-work/static/media/NotoSansTC-Regular.b018ff7b4ccc245480a4.otf",
+    "index.html": "/co-work/index.html",
+    "main.183d6596.js.map": "/co-work/static/js/main.183d6596.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.183d6596.js"
+  ]
+}
