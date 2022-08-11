@@ -253,7 +253,7 @@ function Profile() {
   }, []);
   return (
     <Wrapper>
-      <LoginContainer>
+      {/* <LoginContainer>
         {!isRegisterPage && (
           <>
             <Logo></Logo>
@@ -316,20 +316,7 @@ function Profile() {
             <LoginButton onClick={register}>註冊</LoginButton>
           </>
         )}
-      </LoginContainer>
-      {/* <Title>會員基本資訊</Title>
-      {profile && (
-        <>
-          <Photo src={profile.picture} />
-          <Content>{profile.name}</Content>
-          <Content>{profile.email}</Content>
-          <LogoutButton
-            onClick={() => window.localStorage.removeItem("jwtToken")}
-          >
-            登出
-          </LogoutButton>
-        </>
-      )} */}
+      </LoginContainer> */}
     </Wrapper>
   );
 }
