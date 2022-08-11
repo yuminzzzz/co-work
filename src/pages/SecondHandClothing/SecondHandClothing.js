@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   margin-bottom: 60px;
   max-width: 1160px;
   * {
-    ${"" /* outline: solid 1px black; */}
+    outline: solid 1px black;
   }
 `;
 
@@ -97,6 +97,58 @@ const Hr = styled.div`
   background-color: gray;
 `;
 
+const ProductWrapper = styled.div`
+  flex-wrap: wrap;
+  max-width: 1160px;
+  justify-content: flex-start;
+  margin: 0 auto;
+  margin-top: 70px;
+`;
+
+const ProductCard = styled.div`
+  cursor: pointer;
+  margin-right: 20px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 4px;
+`;
+
+const CardImg = styled.img``;
+
+const CardText = styled.p``;
+
+const BiddingProduct = () => {
+  return (
+    <BiddingThing>
+      <DeadLine>8/15 22:00 結標</DeadLine>
+      <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
+      <BidTitle>大容量運動水壺</BidTitle>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingLeft: "15px",
+          paddingRight: "15px",
+        }}
+      >
+        <Bidtext>
+          目前出價{" "}
+          <span style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}>
+            $10524
+          </span>
+        </Bidtext>
+        <Bidtext>26 次出價</Bidtext>
+      </div>
+      <Bidtext>剩餘時間</Bidtext>
+      <a href="#">
+        <BidButton>我要出價</BidButton>
+      </a>
+    </BiddingThing>
+  );
+};
+
 function SecondHandClothing() {
   return (
     <>
@@ -108,145 +160,21 @@ function SecondHandClothing() {
         <BiddingTitle>二手服飾競標專區</BiddingTitle>
         <Hr />
         <BiddingWrapper>
-          <BiddingThing>
-            <DeadLine>8/15 22:00 結標</DeadLine>
-            <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-            <BidTitle>大容量運動水壺</BidTitle>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-              }}
-            >
-              <Bidtext>
-                目前出價{" "}
-                <span
-                  style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                >
-                  $10524
-                </span>
-              </Bidtext>
-              <Bidtext>26 次出價</Bidtext>
-            </div>
-            <Bidtext>剩餘時間</Bidtext>
-            <a href="#">
-              <BidButton>我要出價</BidButton>
-            </a>
-          </BiddingThing>
-          <BiddingThing>
-            <DeadLine>8/15 22:00 結標</DeadLine>
-            <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-            <BidTitle>大容量運動水壺</BidTitle>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-              }}
-            >
-              <Bidtext>
-                目前出價{" "}
-                <span
-                  style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                >
-                  $10524
-                </span>
-              </Bidtext>
-              <Bidtext>26 次出價</Bidtext>
-            </div>
-            <Bidtext>剩餘時間</Bidtext>
-            <a href="#">
-              <BidButton>我要出價</BidButton>
-            </a>
-          </BiddingThing>
-          <BiddingThing>
-            <DeadLine>8/15 22:00 結標</DeadLine>
-            <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-            <BidTitle>大容量運動水壺</BidTitle>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-              }}
-            >
-              <Bidtext>
-                目前出價{" "}
-                <span
-                  style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                >
-                  $10524
-                </span>
-              </Bidtext>
-              <Bidtext>26 次出價</Bidtext>
-            </div>
-            <Bidtext>剩餘時間</Bidtext>
-            <a href="#">
-              <BidButton>我要出價</BidButton>
-            </a>
-          </BiddingThing>
-          <BiddingThing>
-            <DeadLine>8/15 22:00 結標</DeadLine>
-            <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-            <BidTitle>大容量運動水壺</BidTitle>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-              }}
-            >
-              <Bidtext>
-                目前出價{" "}
-                <span
-                  style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                >
-                  $10524
-                </span>
-              </Bidtext>
-              <Bidtext>26 次出價</Bidtext>
-            </div>
-            <Bidtext>剩餘時間</Bidtext>
-            <a href="#">
-              <BidButton>我要出價</BidButton>
-            </a>
-          </BiddingThing>
-          <BiddingThing>
-            <DeadLine>8/15 22:00 結標</DeadLine>
-            <BidImg src="https://b.ecimg.tw/items/DEBW1GA900ARDDI/000001_1637222488.jpg" />
-            <BidTitle>大容量運動水壺</BidTitle>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingLeft: "15px",
-                paddingRight: "15px",
-              }}
-            >
-              <Bidtext>
-                目前出價{" "}
-                <span
-                  style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                >
-                  $10524
-                </span>
-              </Bidtext>
-              <Bidtext>26 次出價</Bidtext>
-            </div>
-            <Bidtext>剩餘時間</Bidtext>
-            <a href="#">
-              <BidButton>我要出價</BidButton>
-            </a>
-          </BiddingThing>
+          <BiddingProduct />
+          <BiddingProduct />
+          <BiddingProduct />
+          <BiddingProduct />
+          <BiddingProduct />
         </BiddingWrapper>
         <BiddingTitle style={{ marginTop: "35px" }}>所有二手商品</BiddingTitle>
         <Hr />
+        <ProductWrapper>
+          <ProductCard>
+            <CardImg />
+            <CardText></CardText>
+            <CardText></CardText>
+          </ProductCard>
+        </ProductWrapper>
       </Wrapper>
     </>
   );
