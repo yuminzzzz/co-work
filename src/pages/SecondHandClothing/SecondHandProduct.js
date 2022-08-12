@@ -1,3 +1,7 @@
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../../utils/api";
+
 import {
   Wrapper,
   MainImage,
@@ -22,15 +26,26 @@ import {
 import { AddToCart } from "../Product/ProductVariants";
 
 const SecondHandProduct = () => {
+  const [secondHandProduct, setSecondHandProduct] = useState();
+  const { id } = useParams();
+
+  useEffect(() => {
+    async function getSecondHandProduct() {
+      const data = await api.getSecondHandProduct(id);
+      setSecondHandProduct(data);
+    }
+    getSecondHandProduct();
+  }, [id]);
+
+  if (!secondHandProduct) {
+    return null;
+  }
   return (
     <Wrapper>
-      <MainImage
-        style={{ width: "560px" }}
-        src="https://images.unsplash.com/photo-1588189408846-30ad110a0f4c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1205&q=80"
-      />
+      <MainImage src={secondHandProduct.main_image} />
       <Details>
-        <Title>厚實毛呢格子外套</Title>
-        <ID style={{ marginBottom: "10px" }}>1234</ID>
+        <Title>{secondHandProduct.title}</Title>
+        <ID style={{ marginBottom: "10px" }}>{secondHandProduct.id}</ID>
         <PriceWrapper>
           <Price
             style={{
@@ -40,30 +55,42 @@ const SecondHandProduct = () => {
               fontWeight: "bold",
             }}
           >
-            價格 <span style={{ color: "red" }}>$2200</span>
+            價格{" "}
+            <span style={{ color: "red" }}>${secondHandProduct.price}</span>
           </Price>
         </PriceWrapper>
         <DetailWrap style={{ marginTop: "25px", fontSize: "20px" }}>
-          <DetailTitle>數量</DetailTitle>1 件
+          <DetailTitle style={{ width: "100px" }}>數量</DetailTitle>
+          {secondHandProduct.stock} 件
+        </DetailWrap>
+        <DetailWrap style={{ fontSize: "20px", marginTop: "25px" }}>
+          <DetailTitle style={{ width: "100px" }}>賣家</DetailTitle>
+          {secondHandProduct.seller}
         </DetailWrap>
         <AddToCart>加入購物車</AddToCart>
+
         <DetailWrap
-          style={{ display: "block", fontSize: "20px", marginTop: "25px" }}
+          style={{
+            display: "block",
+            fontSize: "20px",
+            marginTop: "25px",
+            width: "350px",
+          }}
         >
           <DetailTitle style={{ marginBottom: "10px" }}>賣家描述</DetailTitle>
-          <Description>這裡可以放很多行</Description>
+          <Description style={{ whiteSpace: "pre-wrap" }}>
+            {secondHandProduct.description}
+          </Description>
         </DetailWrap>
       </Details>
       <Story>
         <StoryTitle>細部說明</StoryTitle>
-        <StoryContent>你絕對不能錯過的超值商品</StoryContent>
+        <StoryContent>{secondHandProduct.story}</StoryContent>
       </Story>
       <Images>
-        {/* {product.images.map((image, index) => (
-            <Image src={image} key={index} />
-          ))} */}
-        <Image src="https://images.unsplash.com/photo-1514813836041-518668f092b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" />
-        <Image src="https://images.unsplash.com/photo-1608635680046-aebf91c1a9c8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" />
+        {secondHandProduct.images.map((image, index) => (
+          <Image src={image} key={index} />
+        ))}
       </Images>
     </Wrapper>
   );

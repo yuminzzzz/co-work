@@ -141,8 +141,8 @@ function SecondHandClothing() {
           </BiddingTitle>
           <Hr />
           <ProductWrapper>
-            {secondHandProduct.map(({ image, price, title }, index) => (
-              <ProductCard to={`/secondhand/${index}`} key={index}>
+            {secondHandProduct.map(({ image, price, title, id }) => (
+              <ProductCard to={`/secondhand/${id}`} key={id}>
                 <CardImg src={image} />
                 <CardTitle>{title}</CardTitle>
                 <CardText>
