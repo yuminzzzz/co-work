@@ -32,9 +32,6 @@ const Wrapper = styled.div`
   margin-top: 55px;
   margin-bottom: 60px;
   max-width: 1160px;
-  * {
-    ${"" /* outline: solid 1px black; */}
-  }
   @media screen and (max-width: 1279px) {
     padding-left: 30px;
     padding-right: 30px;
@@ -107,39 +104,9 @@ const CardText = styled.p`
   margin-bottom: 64px;
 `;
 
-// const useCountdown = (targetDate) => {
-//   const countDownDate = new Date(targetDate).getTime();
-
-//   const [countDown, setCountDown] = useState(
-//     countDownDate - new Date().getTime()
-//   );
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setCountDown(countDownDate - new Date().getTime());
-//     }, 1000);
-
-//     return () => clearInterval(interval);
-//   }, [countDownDate]);
-
-//   return getReturnValues(countDown);
-// };
-// const getReturnValues = (countDown) => {
-//   // calculate time left
-//   const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
-//   const hours = Math.floor(
-//     (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-//   );
-//   const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
-//   const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
-
-//   return [days, hours, minutes, seconds];
-// };
-
 function SecondHandClothing() {
   const [auctions, setAuctions] = useState([]);
   const [secondHandProduct, setSecondHandProduct] = useState([]);
-  // useRef
 
   useEffect(() => {
     async function getAuctionsList() {
@@ -155,14 +122,6 @@ function SecondHandClothing() {
     getSecondHandProductList();
   }, []);
 
-  // const [days, hours, minutes, seconds] = useCountdown(
-  //   "2022-08-20T04:40:39.000Z"
-  // );
-
-  // auctions.forEach((auc) => {
-  //   auc.lastTime = [days, hours, minutes, seconds];
-  // });
-
   if (auctions.length > 0) {
     return (
       <>
@@ -177,57 +136,6 @@ function SecondHandClothing() {
             {auctions.map((element, index) => (
               <BiddingList auctions={auctions[index]} key={index}></BiddingList>
             ))}
-            {/* {auctions.map(
-              ({
-                id,
-                title,
-                currentPrice,
-                deadline,
-                image,
-                count,
-                lastTime,
-              }) => (
-                <BiddingThing to="#" key={id}>
-                  <DeadLine>
-                    {new Date(Date.parse(deadline)).getMonth() + 1}/
-                    {new Date(Date.parse(deadline)).getDate()}{" "}
-                    {new Date(Date.parse(deadline)).getHours()}:
-                    {new Date(Date.parse(deadline)).getMinutes()}:
-                    {new Date(Date.parse(deadline)).getSeconds()} 結標
-                  </DeadLine>
-                  <BidImg src={image} />
-                  <BidTitle>{title}</BidTitle>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      paddingLeft: "15px",
-                      paddingRight: "15px",
-                    }}
-                  >
-                    <Bidtext>
-                      目前出價
-                      <span
-                        style={{
-                          color: "red",
-                          fontSize: "25px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        ${currentPrice}
-                      </span>
-                    </Bidtext>
-                    <Bidtext>{count} 次出價</Bidtext>
-                  </div>
-                  <Bidtext style={{ marginLeft: "15px" }}>
-                    剩餘時間 {lastTime[0]} 天 {lastTime[1]} 小時 {lastTime[2]}{" "}
-                    分鐘 {lastTime[3]} 秒
-                  </Bidtext>
-                  <BidButton to="#">我要出價</BidButton>
-                </BiddingThing>
-              )
-            )} */}
           </BiddingWrapper>
           <BiddingTitle style={{ marginTop: "35px" }}>
             所有二手商品
