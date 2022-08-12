@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
@@ -103,12 +103,24 @@ const PriceWrapper = styled.div`
 `;
 
 const BiddingProduct = () => {
+  const [auctionProduct, setAuctionProduct] = useState();
+  const { id } = useParams();
+
+  useEffect(() => {
+    async function getAuctionProduct() {
+      const data = await api.getAuctionProduct(id);
+      setAuctionProduct(data);
+    }
+    getAuctionProduct();
+  }, [id]);
+
+  if (!auctionProduct) return null;
   return (
     <Wrapper>
-      <MainImage src="https://images.unsplash.com/photo-1617391258031-f8d80b22fb35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
+      <MainImage src={auctionProduct.main_image} />
       <Details>
-        <Title>厚實毛呢格子外套</Title>
-        <ID style={{ marginBottom: "10px" }}>1234</ID>
+        <Title>{auctionProduct.title}</Title>
+        <ID style={{ marginBottom: "10px" }}>{auctionProduct.id}</ID>
         <PriceWrapper>
           <Price
             style={{
@@ -118,15 +130,18 @@ const BiddingProduct = () => {
               fontWeight: "bold",
             }}
           >
-            目前出價 <span style={{ color: "red" }}>$2200</span>
+            目前出價{" "}
+            <span style={{ color: "red" }}>${auctionProduct.currentPrice}</span>
           </Price>
-          <CountPrice>26 次出價</CountPrice>
+          <CountPrice>{auctionProduct.count} 次出價</CountPrice>
         </PriceWrapper>
         <DetailWrap>
-          <DetailTitle>數量</DetailTitle>1 件
+          <DetailTitle>數量</DetailTitle>
+          {auctionProduct.stock} 件
         </DetailWrap>
         <HighestPerson>
-          <DetailTitle>最高出價者</DetailTitle>小明
+          <DetailTitle>最高出價者</DetailTitle>
+          {auctionProduct.currentUser}
         </HighestPerson>
         <BiddingButtonWrapper style={{ marginTop: "40px" }}>
           <ButtonTitle>出價增額</ButtonTitle>
@@ -145,7 +160,8 @@ const BiddingProduct = () => {
           <DetailTitle>截止時間</DetailTitle>2022/8/11 12:40:39
         </DetailWrap>
         <DetailWrap>
-          <DetailTitle>付款方式</DetailTitle>信用卡付款
+          <DetailTitle>付款方式</DetailTitle>
+          {auctionProduct.payment}
         </DetailWrap>
         <DetailWrap
           style={{
@@ -153,21 +169,20 @@ const BiddingProduct = () => {
             paddingBottom: "15px",
           }}
         >
-          <DetailTitle>運費</DetailTitle>80 元
+          <DetailTitle>運費</DetailTitle>
+          {auctionProduct.shipping} 元
         </DetailWrap>
 
-        <Description>這裡可以放很多行</Description>
+        <Description>{auctionProduct.description}</Description>
       </Details>
       <Story>
         <StoryTitle>細部說明</StoryTitle>
-        <StoryContent>你絕對不能錯過的超值商品</StoryContent>
+        <StoryContent>{auctionProduct.story}</StoryContent>
       </Story>
       <Images>
-        {/* {product.images.map((image, index) => (
+        {auctionProduct.images.map((image, index) => (
           <Image src={image} key={index} />
-        ))} */}
-        <Image src="https://images.unsplash.com/photo-1514813836041-518668f092b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" />
-        <Image src="https://images.unsplash.com/photo-1608635680046-aebf91c1a9c8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" />
+        ))}
       </Images>
     </Wrapper>
   );

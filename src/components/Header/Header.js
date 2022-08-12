@@ -256,7 +256,6 @@ function Header() {
   const category = searchParams.get("category");
   const location = useLocation();
   const secondHandCategory = location.pathname.split("/")[1];
-  console.log(secondHandCategory);
   const { getItems } = useContext(CartContext);
 
   useEffect(() => {
