@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -93,7 +93,7 @@ const BiddingList = (props) => {
   if (lastTime) {
     return (
       <>
-        <BiddingThing to="#" key={id}>
+        <BiddingThing to={`/bidding/${id}`} key={id}>
           <DeadLine>
             {new Date(Date.parse(deadline)).getMonth() + 1}/
             {new Date(Date.parse(deadline)).getDate()}{" "}
@@ -132,7 +132,11 @@ const BiddingList = (props) => {
               : `剩餘時間 ${lastTime[0]}天${lastTime[1]}小時${lastTime[2]}分鐘
             ${lastTime[3]}秒`}
           </Bidtext>
-          <BidButton to="#">我要出價</BidButton>
+          <BidButton to="#">
+            {lastTime[0] + lastTime[1] + lastTime[2] + lastTime[3] < 0
+              ? "查看得標者"
+              : "我要出價"}
+          </BidButton>
         </BiddingThing>
       </>
     );

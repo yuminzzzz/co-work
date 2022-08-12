@@ -116,7 +116,6 @@ function SecondHandClothing() {
     async function getSecondHandProductList() {
       const { data } = await api.getSecondHandProductList();
       setSecondHandProduct(data);
-      console.log(data);
     }
     getAuctionsList();
     getSecondHandProductList();
