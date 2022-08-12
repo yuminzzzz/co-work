@@ -116,7 +116,6 @@ function SecondHandClothing() {
     async function getSecondHandProductList() {
       const { data } = await api.getSecondHandProductList();
       setSecondHandProduct(data);
-      console.log(data);
     }
     getAuctionsList();
     getSecondHandProductList();
@@ -142,8 +141,8 @@ function SecondHandClothing() {
           </BiddingTitle>
           <Hr />
           <ProductWrapper>
-            {secondHandProduct.map(({ image, price, title }, index) => (
-              <ProductCard to="#" key={index}>
+            {secondHandProduct.map(({ image, price, title, id }) => (
+              <ProductCard to={`/secondhand/${id}`} key={id}>
                 <CardImg src={image} />
                 <CardTitle>{title}</CardTitle>
                 <CardText>

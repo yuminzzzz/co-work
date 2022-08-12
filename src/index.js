@@ -8,6 +8,8 @@ import ThankYou from "./pages/ThankYou/ThankYou";
 import Product from "./pages/Product/Product";
 import Profile from "./pages/Profile/Profile";
 import SecondHandClothing from "./pages/SecondHandClothing/SecondHandClothing";
+import BiddingProduct from "./pages/Bidding/BiddingProduct";
+import SecondHandProduct from "./pages/SecondHandClothing/SecondHandProduct";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
@@ -38,6 +40,8 @@ root.render(
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="secondhandclothing" element={<SecondHandClothing />} />
+        <Route path="bidding/:id" element={<BiddingProduct />} />
+        <Route path="secondhand/:id" element={<SecondHandProduct />} />
         <Route path="products/:id" element={<Product />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="thankyou" element={<ThankYou />} />

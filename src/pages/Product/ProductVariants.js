@@ -111,7 +111,7 @@ const AddToCart = styled.button`
 
   @media screen and (max-width: 1279px) {
     height: 44px;
-    margin-top: 10px;
+    margin-top: 15px;
     font-size: 16px;
     letter-spacing: 3.2px;
     color: white;
@@ -215,3 +215,4 @@ function ProductVariants({ product }) {
 }
 
 export default ProductVariants;
+export { AddToCart };

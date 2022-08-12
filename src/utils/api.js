@@ -59,6 +59,14 @@ const api = {
     const response = await fetch(`${this.coworkname}/second-hand`);
     return await response.json();
   },
+  async getAuctionProduct(id) {
+    const response = await fetch(`${this.coworkname}/auction/${id}`);
+    return await response.json();
+  },
+  async getSecondHandProduct(id) {
+    const response = await fetch(`${this.coworkname}/second-hand/${id}`);
+    return await response.json();
+  },
 };
 
 export default api;
