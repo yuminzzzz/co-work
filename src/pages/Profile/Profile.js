@@ -6,7 +6,7 @@ import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
 
 const Wrapper = styled.div`
-  height: calc(100vh - 255px);
+  min-height: calc(100vh - 255px);
   background: #f0f2f5;
 
   display: flex;
@@ -14,25 +14,6 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
-// const Title = styled.div`
-//   padding-bottom: 16px;
-//   border-bottom: 1px solid #979797;
-//   font-size: 24px;
-//   font-weight: bold;
-// `;
-
-// const Photo = styled.img`
-//   margin-top: 24px;
-// `;
-
-// const Content = styled.div`
-//   margin-top: 24px;
-// `;
-
-// const LogoutButton = styled.button`
-//   margin-top: 24px;
-// `;
 
 const LoginContainer = styled.div`
   position: relative;
@@ -127,13 +108,154 @@ const ReturnLoginButton = styled.div`
   cursor: pointer;
 `;
 
+// usesrprofile page
+
+const UserProfile = styled.div`
+  width: 1280px;
+`;
+
+const UserProfileContainer = styled.div`
+  display: flex;
+`;
+
+const UserInfoContainer = styled.div`
+  border: solid 1px black;
+  width: 30%;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+`;
+
+const UserAvatar = styled.div`
+  border: solid 1px black;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 30px;
+`;
+
+const UserName = styled.h1`
+  width: 80%;
+  font-size: 24px;
+  margin-bottom: 30px;
+  word-wrap: break-word;
+  text-align: center;
+`;
+
+const LogoutButton = styled.button`
+  width: 50%;
+  border: solid 1px black;
+  font-size: 24px;
+  line-height: 50px;
+  letter-spacing: 5px;
+  display: block;
+  cursor: pointer;
+`;
+
+const InfoContainer = styled.div`
+  border: solid 1px black;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 70px;
+`;
+
+const BidHead = styled.div`
+  width: 100%;
+`;
+
+const BidHeadButton = styled.button`
+  font-size: 20px;
+  width: 150px;
+  line-height: 40px;
+  border: solid 1px black;
+  cursor: pointer;
+`;
+
+const BidBody = styled.div`
+  border: solid 1px black;
+  width: 100%;
+  height: 400px;
+  padding: 30px;
+  display: flex;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const BidItem = styled.div`
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  flex-basis: 200px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  margin: 0 10px;
+  & :hover {
+    background-color: rgba(0, 0, 23, 0.05);
+  }
+  cursor: pointer;
+`;
+
+const Shadow = styled.div`
+  transition: 0.2s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const BidItemImg = styled.img`
+  width: 100%;
+  height: 60%;
+`;
+
+const BidItemBody = styled.div`
+  height: 40%;
+  padding: 15px;
+`;
+
+const BidTitle = styled.p`
+  font-size: 18px;
+  margin-bottom: 35px;
+`;
+
+const BidPrice = styled.p`
+  font-size: 18px;
+  color: red;
+  margin-bottom: 10px;
+`;
+
+const BidDeadline = styled.p`
+  font-size: 16px;
+  color: grey;
+`;
+
 function Profile() {
-  const [profile, setProfile] = useState();
+  // const [profile, setProfile] = useState();
+  const [userToken, setUserToken] = useState(
+    localStorage.getItem("userToken") || []
+  );
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
     account: "",
     password: "",
+  });
+  const [feature, setFeature] = useState({
+    bitWin: true,
+    launch: null,
+    unLaunch: null,
   });
   const validation = (e) => {
     if (e.target.placeholder === "請輸入名字") {
@@ -180,6 +302,7 @@ function Profile() {
       }
     }
   };
+
   const register = async () => {
     if (Object.values(valid).some((item) => item === "")) return;
     // 串註冊 api
@@ -198,8 +321,25 @@ function Profile() {
         method: "POST",
       }
     );
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
+    setUserToken(localStorage.getItem("userToken"));
+  };
+
+  const getUserProfile = async (token) => {
+    const response = await fetch(
+      "https://claudia-teng.com/api/1.0/user/profile",
+      {
+        headers: new Headers({
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }),
+      }
+    );
     console.log(await response.json());
   };
+
   const login = async () => {
     const inputCheck = Object.values(valid).filter(
       (item) => item !== ""
@@ -221,9 +361,62 @@ function Profile() {
         method: "POST",
       }
     );
-    console.log(await response.json());
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
+    setUserToken(localStorage.getItem("userToken"));
   };
 
+  const fbLogin = async () => {
+    const data = {
+      provider: "facebook",
+      access_token: await getJwtToken(),
+    };
+    const response = await fetch(
+      "https://claudia-teng.com/api/1.0/user/signin",
+      {
+        body: JSON.stringify(data),
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        method: "POST",
+      }
+    );
+    const responseData = await response.json();
+    const token = responseData.data.access_token;
+    localStorage.setItem("userToken", token);
+    setUserToken(localStorage.getItem("userToken"));
+    getUserProfile(token);
+  };
+
+  const Logout = () => {
+    localStorage.removeItem("userToken");
+    setUserToken([]);
+  };
+
+  const featureSwitch = (e) => {
+    if (e.target.innerText === "已得標") {
+      setFeature({
+        bitWin: true,
+        launch: null,
+        unLaunch: null,
+      });
+    }
+    if (e.target.innerText === "上架") {
+      setFeature({
+        bitWin: null,
+        launch: true,
+        unLaunch: null,
+      });
+    }
+    if (e.target.innerText === "下架") {
+      setFeature({
+        bitWin: null,
+        launch: null,
+        unLaunch: true,
+      });
+    }
+  };
   useEffect(() => {
     setValid({
       name: "",
@@ -232,93 +425,154 @@ function Profile() {
     });
   }, [isRegisterPage]);
 
-  useEffect(() => {
-    async function getProfile() {
-      let jwtToken = window.localStorage.getItem("jwtToken");
-
-      if (!jwtToken) {
-        try {
-          jwtToken = await getJwtToken();
-        } catch (e) {
-          window.alert(e.message);
-          return;
-        }
-      }
-      window.localStorage.setItem("jwtToken", jwtToken);
-
-      const { data } = await api.getProfile(jwtToken);
-      setProfile(data);
-    }
-    getProfile();
-  }, []);
   return (
     <Wrapper>
-      {/* <LoginContainer>
-        {!isRegisterPage && (
-          <>
-            <Logo></Logo>
-            <InputSection>
-              <InputContainer>
-                <Input
-                  placeholder="請輸入帳號或電子郵件"
-                  autoFocus="1"
-                  className="accountValid"
-                  onBlur={(e) => validation(e)}
-                ></Input>
-              </InputContainer>
-              <InputContainer>
-                <Input
-                  placeholder="請輸入密碼"
-                  className="passwordValid"
-                  type="password"
-                  onBlur={(e) => validation(e)}
-                ></Input>
-              </InputContainer>
-            </InputSection>
-            <LoginButton onClick={login}>登入</LoginButton>
-            <FacebookLoginButton>以facebook登入</FacebookLoginButton>
-            <Divider></Divider>
-            <RegisterButton onClick={() => setIsRegisterPage(true)}>
-              建立新帳號
-            </RegisterButton>
-          </>
-        )}
-        {isRegisterPage && (
-          <>
-            <ReturnLoginButton onClick={() => setIsRegisterPage(false)}>
-              {"<<"}
-            </ReturnLoginButton>
-            <Logo></Logo>
-            <InputSection>
-              <InputContainer>
-                <Input
-                  placeholder="請輸入名字"
-                  autoFocus="1"
-                  onBlur={(e) => validation(e)}
-                ></Input>
-              </InputContainer>
-              <InputContainer>
-                <Input
-                  placeholder="請輸入電子郵件"
-                  className="accountValid"
-                  onBlur={(e) => validation(e)}
-                ></Input>
-              </InputContainer>
-              <InputContainer>
-                <Input
-                  placeholder="請輸入6~16位密碼(含1大寫＆小寫英文及數字)"
-                  className="passwordValid"
-                  type="password"
-                  onBlur={(e) => validation(e)}
-                ></Input>
-              </InputContainer>
-            </InputSection>
-            <LoginButton onClick={register}>註冊</LoginButton>
-          </>
-        )}
-      </LoginContainer> */}
+      {!userToken.length > 0 ? (
+        <LoginContainer>
+          {!isRegisterPage && (
+            <>
+              <Logo></Logo>
+              <InputSection>
+                <InputContainer>
+                  <Input
+                    placeholder="請輸入帳號或電子郵件"
+                    autoFocus="1"
+                    className="accountValid"
+                    onBlur={(e) => validation(e)}
+                  ></Input>
+                </InputContainer>
+                <InputContainer>
+                  <Input
+                    placeholder="請輸入密碼"
+                    className="passwordValid"
+                    type="password"
+                    onBlur={(e) => validation(e)}
+                  ></Input>
+                </InputContainer>
+              </InputSection>
+              <LoginButton onClick={login}>登入</LoginButton>
+              <FacebookLoginButton onClick={fbLogin}>
+                以facebook登入
+              </FacebookLoginButton>
+              <Divider></Divider>
+              <RegisterButton onClick={() => setIsRegisterPage(true)}>
+                建立新帳號
+              </RegisterButton>
+            </>
+          )}
+          {isRegisterPage && (
+            <>
+              <ReturnLoginButton onClick={() => setIsRegisterPage(false)}>
+                {"<<"}
+              </ReturnLoginButton>
+              <Logo></Logo>
+              <InputSection>
+                <InputContainer>
+                  <Input
+                    placeholder="請輸入名字"
+                    autoFocus="1"
+                    onBlur={(e) => validation(e)}
+                  ></Input>
+                </InputContainer>
+                <InputContainer>
+                  <Input
+                    placeholder="請輸入電子郵件"
+                    className="accountValid"
+                    onBlur={(e) => validation(e)}
+                  ></Input>
+                </InputContainer>
+                <InputContainer>
+                  <Input
+                    placeholder="請輸入6~16位密碼(含1大寫＆小寫英文及數字)"
+                    className="passwordValid"
+                    type="password"
+                    onBlur={(e) => validation(e)}
+                  ></Input>
+                </InputContainer>
+              </InputSection>
+              <LoginButton onClick={register}>註冊</LoginButton>
+            </>
+          )}
+        </LoginContainer>
+      ) : (
+        <UserProfile>
+          <UserProfileContainer>
+            <UserInfoContainer>
+              <UserAvatar></UserAvatar>
+              <UserName>rqmu0114@gmail.com</UserName>
+              <LogoutButton onClick={Logout}>登出</LogoutButton>
+            </UserInfoContainer>
+            <InfoContainer>
+              <BidHead>
+                <BidHeadButton onClick={(e) => featureSwitch(e)}>
+                  已得標
+                </BidHeadButton>
+                <BidHeadButton onClick={(e) => featureSwitch(e)}>
+                  上架
+                </BidHeadButton>
+                <BidHeadButton onClick={(e) => featureSwitch(e)}>
+                  下架
+                </BidHeadButton>
+              </BidHead>
+              <BidBody>
+                {feature.bitWin && (
+                  <>
+                    <BidItem>
+                      <Shadow></Shadow>
+                      <BidItemImg></BidItemImg>
+                      <BidItemBody>
+                        <BidTitle>得標商品</BidTitle>
+                        <BidPrice>結標金額</BidPrice>
+                        <BidDeadline>結標日期</BidDeadline>
+                      </BidItemBody>
+                    </BidItem>
+                    <BidItem>
+                      <Shadow></Shadow>
+                      <BidItemImg></BidItemImg>
+                      <BidItemBody>
+                        <BidTitle>得標商品</BidTitle>
+                        <BidPrice>結標金額</BidPrice>
+                        <BidDeadline>結標日期</BidDeadline>
+                      </BidItemBody>
+                    </BidItem>
+                    <BidItem>
+                      <Shadow></Shadow>
+                      <BidItemImg></BidItemImg>
+                      <BidItemBody>
+                        <BidTitle>得標商品</BidTitle>
+                        <BidPrice>結標金額</BidPrice>
+                        <BidDeadline>結標日期</BidDeadline>
+                      </BidItemBody>
+                    </BidItem>
+                    <BidItem>
+                      <Shadow></Shadow>
+                      <BidItemImg></BidItemImg>
+                      <BidItemBody>
+                        <BidTitle>得標商品</BidTitle>
+                        <BidPrice>結標金額</BidPrice>
+                        <BidDeadline>結標日期</BidDeadline>
+                      </BidItemBody>
+                    </BidItem>
+                  </>
+                )}
+                {feature.launch && (
+                  <>
+                    <h1>launch</h1>
+                  </>
+                )}
+                {feature.unLaunch && (
+                  <>
+                    <h1>unLaunch</h1>
+                  </>
+                )}
+              </BidBody>
+            </InfoContainer>
+          </UserProfileContainer>
+        </UserProfile>
+      )}
     </Wrapper>
   );
 }
 
 export default Profile;
+
