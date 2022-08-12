@@ -102,6 +102,55 @@ const PriceWrapper = styled.div`
   }
 `;
 
+const BiddingLastTimeDetail = (props) => {
+  const useCountdown = (targetDate) => {
+    const countDownDate = new Date(targetDate).getTime();
+
+    const [countDown, setCountDown] = useState(
+      countDownDate - new Date().getTime()
+    );
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCountDown(countDownDate - new Date().getTime());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [countDownDate]);
+
+    return getReturnValues(countDown);
+  };
+  const getReturnValues = (countDown) => {
+    const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
+
+    return [days, hours, minutes, seconds];
+  };
+  const [days, hours, minutes, seconds] = useCountdown(
+    props.auctionProduct.deadline
+  );
+
+  props.auctionProduct.lastTime = [days, hours, minutes, seconds];
+  return (
+    <DetailWrap>
+      <DetailTitle>剩餘時間</DetailTitle>
+      {props.auctionProduct.lastTime[0] +
+        props.auctionProduct.lastTime[1] +
+        props.auctionProduct.lastTime[2] +
+        props.auctionProduct.lastTime[3] <
+      0
+        ? "已結標"
+        : `${props.auctionProduct.lastTime[0]} 天 ${props.auctionProduct.lastTime[1]} 
+      小時 ${props.auctionProduct.lastTime[2]} 分 
+      ${props.auctionProduct.lastTime[3]} 秒`}
+    </DetailWrap>
+  );
+};
+
 const BiddingProduct = () => {
   const [auctionProduct, setAuctionProduct] = useState();
   const { id } = useParams();
@@ -114,7 +163,10 @@ const BiddingProduct = () => {
     getAuctionProduct();
   }, [id]);
 
-  if (!auctionProduct) return null;
+  if (!auctionProduct) {
+    return null;
+  }
+
   return (
     <Wrapper>
       <MainImage src={auctionProduct.main_image} />
@@ -153,11 +205,15 @@ const BiddingProduct = () => {
           <UserNowBiddingPrice>2300</UserNowBiddingPrice>
           <BiddingButton>我要出價</BiddingButton>
         </UserBiddingPriceWrapper>
+        <BiddingLastTimeDetail auctionProduct={auctionProduct} />
         <DetailWrap>
-          <DetailTitle>剩餘時間</DetailTitle>20 天 23 小時 59 分 59 秒
-        </DetailWrap>
-        <DetailWrap>
-          <DetailTitle>截止時間</DetailTitle>2022/8/11 12:40:39
+          <DetailTitle>截止時間</DetailTitle>
+          {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
+          {new Date(Date.parse(auctionProduct.deadline)).getMonth() + 1}/
+          {new Date(Date.parse(auctionProduct.deadline)).getDate()}{" "}
+          {new Date(Date.parse(auctionProduct.deadline)).getHours()}:
+          {new Date(Date.parse(auctionProduct.deadline)).getMinutes()}:
+          {new Date(Date.parse(auctionProduct.deadline)).getSeconds()}
         </DetailWrap>
         <DetailWrap>
           <DetailTitle>付款方式</DetailTitle>
