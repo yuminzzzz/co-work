@@ -142,6 +142,9 @@ const BiddingProduct = () => {
           <DetailTitle>剩餘時間</DetailTitle>20 天 23 小時 59 分 59 秒
         </DetailWrap>
         <DetailWrap>
+          <DetailTitle>截止時間</DetailTitle>2022/8/11 12:40:39
+        </DetailWrap>
+        <DetailWrap>
           <DetailTitle>付款方式</DetailTitle>信用卡付款
         </DetailWrap>
         <DetailWrap
@@ -171,3 +174,4 @@ const BiddingProduct = () => {
 };
 
 export default BiddingProduct;
+export { PriceWrapper, DetailTitle, DetailWrap };

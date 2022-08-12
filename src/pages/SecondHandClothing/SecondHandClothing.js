@@ -142,7 +142,7 @@ function SecondHandClothing() {
           <Hr />
           <ProductWrapper>
             {secondHandProduct.map(({ image, price, title }, index) => (
-              <ProductCard to="#" key={index}>
+              <ProductCard to={`/secondhand/${index}`} key={index}>
                 <CardImg src={image} />
                 <CardTitle>{title}</CardTitle>
                 <CardText>
