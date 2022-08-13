@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
+import io from "socket.io-client";
+
 import {
   Wrapper,
   MainImage,
@@ -48,11 +50,14 @@ const ButtonTitle = styled.h3`
   width: 110px;
 `;
 
-const PriceButton = styled.div`
-  padding: 10px 15px;
+const PriceButton = styled.button`
+  padding: 8px 15px;
   background-color: #feecd8;
   margin-left: 10px;
   cursor: pointer;
+  font-size: 18px;
+  border: none;
+  text-align: center;
   &:hover {
     background-color: #cfb9ab;
   }
@@ -61,6 +66,8 @@ const PriceButton = styled.div`
 const UserBiddingPriceWrapper = styled.div`
   background-color: #ececec;
   display: flex;
+  flex-wrap: wrap;
+  width: 350px;
   justify-content: space-between;
   padding: 20px 15px;
   margin-top: 15px;
@@ -83,6 +90,7 @@ const BiddingButton = styled.div`
   cursor: pointer;
   transition: 0.2s;
   border-radius: 5px;
+  text-align: center;
   &:hover {
     background-color: #69523d;
     color: #fff;
@@ -154,11 +162,45 @@ const BiddingLastTimeDetail = (props) => {
 const BiddingProduct = () => {
   const [auctionProduct, setAuctionProduct] = useState();
   const { id } = useParams();
+  const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
+  const [plusPrice, setPlusPrice] = useState(0);
+  const [currentUser, setCurrentUser] = useState();
+  const socket = io.connect("https://weigen.online");
+
+  const clickButton = (e) => {
+    e.preventDefault();
+    setPlusPrice((prev) => prev + Number(e.target.value));
+  };
+
+  const resetButton = (e) => {
+    e.preventDefault();
+    setPlusPrice(0);
+  };
+
+  const setPricetoServer = () => {
+    const passMessage = {
+      user_id: currentUser,
+      auction_id: id,
+      price: currentOriginPrice + plusPrice,
+    };
+    setPlusPrice(0);
+    socket.emit("chat message", passMessage);
+    console.log(passMessage);
+  };
+
+  useEffect(() => {
+    socket.on("chat message", (data) => {
+      setCurrentOriginPrice(data);
+      console.log(data);
+    });
+  }, []);
 
   useEffect(() => {
     async function getAuctionProduct() {
       const data = await api.getAuctionProduct(id);
       setAuctionProduct(data);
+      setCurrentOriginPrice(data.currentPrice);
+      setCurrentUser(data.currentUser);
     }
     getAuctionProduct();
   }, [id]);
@@ -182,8 +224,7 @@ const BiddingProduct = () => {
               fontWeight: "bold",
             }}
           >
-            目前出價{" "}
-            <span style={{ color: "red" }}>${auctionProduct.currentPrice}</span>
+            目前出價 <span style={{ color: "red" }}>${currentOriginPrice}</span>
           </Price>
           <CountPrice>{auctionProduct.count} 次出價</CountPrice>
         </PriceWrapper>
@@ -195,15 +236,59 @@ const BiddingProduct = () => {
           <DetailTitle>最高出價者</DetailTitle>
           {auctionProduct.currentUser}
         </HighestPerson>
-        <BiddingButtonWrapper style={{ marginTop: "40px" }}>
+        <BiddingButtonWrapper style={{ marginTop: "30px" }}>
           <ButtonTitle>出價增額</ButtonTitle>
-          <PriceButton>$100</PriceButton>
-          <PriceButton>$500</PriceButton>
-          <PriceButton>$1000</PriceButton>
+          <PriceButton
+            value="100"
+            onClick={(e) => {
+              clickButton(e);
+            }}
+          >
+            100
+          </PriceButton>
+          <PriceButton
+            value="500"
+            onClick={(e) => {
+              clickButton(e);
+            }}
+          >
+            500
+          </PriceButton>
+          <PriceButton
+            value="1000"
+            onClick={(e) => {
+              clickButton(e);
+            }}
+          >
+            1000
+          </PriceButton>
         </BiddingButtonWrapper>
         <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
-          <UserNowBiddingPrice>2300</UserNowBiddingPrice>
-          <BiddingButton>我要出價</BiddingButton>
+          <UserNowBiddingPrice>
+            {plusPrice === 0
+              ? "請點擊按鈕進行出價"
+              : `${plusPrice + currentOriginPrice}`}
+          </UserNowBiddingPrice>
+          <BiddingButton
+            onClick={() => {
+              setPricetoServer();
+            }}
+          >
+            我要出價
+          </BiddingButton>
+          <BiddingButton
+            onClick={(e) => {
+              resetButton(e);
+            }}
+            style={{
+              flexBasis: "350px",
+              marginLeft: "0",
+              marginTop: "15px",
+              fontSize: "18px",
+            }}
+          >
+            出價歸零
+          </BiddingButton>
         </UserBiddingPriceWrapper>
         <BiddingLastTimeDetail auctionProduct={auctionProduct} />
         <DetailWrap>
