@@ -136,6 +136,9 @@ const BiddingLastTimeDetail = (props) => {
     const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
 
+    if (days + hours + minutes + seconds < 0) {
+      props.setDisabled("disabled");
+    }
     return [days, hours, minutes, seconds];
   };
   const [days, hours, minutes, seconds] = useCountdown(
@@ -165,11 +168,14 @@ const BiddingProduct = () => {
   const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
   const [plusPrice, setPlusPrice] = useState(0);
   const [currentUser, setCurrentUser] = useState();
+  const [disabled, setDisabled] = useState();
   const socket = io.connect("https://weigen.online");
-
+  //{lastTime[0] + lastTime[1] + lastTime[2] + lastTime[3] < 0
   const clickButton = (e) => {
     e.preventDefault();
-    setPlusPrice((prev) => prev + Number(e.target.value));
+    if (!disabled) {
+      setPlusPrice((prev) => prev + Number(e.target.value));
+    }
   };
 
   const resetButton = (e) => {
@@ -178,14 +184,18 @@ const BiddingProduct = () => {
   };
 
   const setPricetoServer = () => {
-    const passMessage = {
-      user_id: currentUser,
-      auction_id: id,
-      price: currentOriginPrice + plusPrice,
-    };
-    setPlusPrice(0);
-    socket.emit("chat message", passMessage);
-    console.log(passMessage);
+    if (!disabled) {
+      const passMessage = {
+        user_id: currentUser,
+        auction_id: id,
+        price: currentOriginPrice + plusPrice,
+      };
+      setPlusPrice(0);
+      socket.emit("chat message", passMessage);
+      console.log(passMessage);
+    } else {
+      alert("此商品競標已結束！");
+    }
   };
 
   useEffect(() => {
@@ -233,7 +243,7 @@ const BiddingProduct = () => {
           {auctionProduct.stock} 件
         </DetailWrap>
         <HighestPerson>
-          <DetailTitle>最高出價者</DetailTitle>
+          <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
           {auctionProduct.currentUser}
         </HighestPerson>
         <BiddingButtonWrapper style={{ marginTop: "30px" }}>
@@ -266,10 +276,13 @@ const BiddingProduct = () => {
         <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
           <UserNowBiddingPrice>
             {plusPrice === 0
-              ? "請點擊按鈕進行出價"
+              ? !disabled
+                ? "請點擊按鈕進行出價"
+                : "此商品競標已截止"
               : `${plusPrice + currentOriginPrice}`}
           </UserNowBiddingPrice>
           <BiddingButton
+            disabled={disabled}
             onClick={() => {
               setPricetoServer();
             }}
@@ -290,7 +303,10 @@ const BiddingProduct = () => {
             出價歸零
           </BiddingButton>
         </UserBiddingPriceWrapper>
-        <BiddingLastTimeDetail auctionProduct={auctionProduct} />
+        <BiddingLastTimeDetail
+          auctionProduct={auctionProduct}
+          setDisabled={setDisabled}
+        />
         <DetailWrap>
           <DetailTitle>截止時間</DetailTitle>
           {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
