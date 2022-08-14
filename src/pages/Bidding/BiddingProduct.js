@@ -170,7 +170,6 @@ const BiddingProduct = () => {
   const [currentUser, setCurrentUser] = useState();
   const [disabled, setDisabled] = useState();
   const socket = io.connect("https://weigen.online");
-  //{lastTime[0] + lastTime[1] + lastTime[2] + lastTime[3] < 0
   const clickButton = (e) => {
     e.preventDefault();
     if (!disabled) {
@@ -186,11 +185,14 @@ const BiddingProduct = () => {
   const setPricetoServer = () => {
     if (!disabled) {
       const passMessage = {
-        user_id: currentUser,
-        auction_id: id,
-        price: currentOriginPrice + plusPrice,
+        userId: 2,
+        // userId: currentUser,
+        auctionId: id,
+        room: id,
+        bid: currentOriginPrice + plusPrice,
       };
       setPlusPrice(0);
+      // socket.emit("join_room", id);
       socket.emit("chat message", passMessage);
       console.log(passMessage);
     } else {
@@ -199,9 +201,10 @@ const BiddingProduct = () => {
   };
 
   useEffect(() => {
+    socket.emit("join_room", id);
     socket.on("chat message", (data) => {
       setCurrentOriginPrice(data);
-      console.log(data);
+      // console.log(data);
     });
   }, []);
 
@@ -211,6 +214,7 @@ const BiddingProduct = () => {
       setAuctionProduct(data);
       setCurrentOriginPrice(data.currentPrice);
       setCurrentUser(data.currentUser);
+      console.log(data);
     }
     getAuctionProduct();
   }, [id]);
