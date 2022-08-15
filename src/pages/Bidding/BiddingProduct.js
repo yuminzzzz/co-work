@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
 import io from "socket.io-client";
+import Confetti from "react-confetti";
 
 import {
   Wrapper,
@@ -110,6 +111,51 @@ const PriceWrapper = styled.div`
   }
 `;
 
+const BlackAllLayout = styled.div`
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+`;
+
+const PopUpMessage = styled.div`
+  width: 500px;
+  height: 350px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 30vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const PopUpImg = styled.img`
+  width: 200px;
+  height: 200px;
+`;
+
+const PopUpText = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 40px;
+  ${"" /* line-height: 130px; */}
+  margin-top: 40px;
+`;
+
+const PopUpNote = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  margin-top: 15px;
+`;
+
 const BiddingLastTimeDetail = (props) => {
   const useCountdown = (targetDate) => {
     const countDownDate = new Date(targetDate).getTime();
@@ -163,21 +209,30 @@ const BiddingLastTimeDetail = (props) => {
 };
 
 const BiddingProduct = () => {
+  const userToken = localStorage.getItem("userToken") || "";
+  let navigate = useNavigate();
   const [auctionProduct, setAuctionProduct] = useState();
+  const socketRef = useRef();
   const { id } = useParams();
-  const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
-  const [plusPrice, setPlusPrice] = useState(0);
-  const [currentUser, setCurrentUser] = useState();
-  const [userID, setUserID] = useState();
-  const [disabled, setDisabled] = useState();
-  // const socket = io.connect("https://claudia-teng.com/");
-  const socket = io.connect("https://claudia-teng.com/", {
-    // forceNew: true,
-    transports: ["websocket", "polling", "flashsocket"],
-    // extraHeaders: {
-    //   Authorization: `Bearer`,
-    // },
+  const [productInfo, setProductInfo] = useState({
+    currentPrice: 0,
+    currentBidCount: 0,
+    currentUser: "",
   });
+  const [plusPrice, setPlusPrice] = useState(0);
+  const [disabled, setDisabled] = useState();
+  const [bidSuccess, setBidSuccess] = useState(false);
+  const [bidFail, setBidFail] = useState(false);
+  const [bidInfo, setBidInfo] = useState("");
+  const [bidSuccessInfoTime, setBidSuccessInfoTime] = useState(5);
+  const [bidFailInfoTime, setBidFailInfoTime] = useState(3);
+  const popUpImages = {
+    success:
+      "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidSuccess-removebg-preview.png?raw=true",
+    fail: "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidFail-removebg-preview.png?raw=true",
+    freq: "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidFreq-removebg-preview.png?raw=true",
+  };
+
   const clickButton = (e) => {
     e.preventDefault();
     if (!disabled) {
@@ -192,28 +247,73 @@ const BiddingProduct = () => {
 
   const setPricetoServer = () => {
     if (!disabled) {
-      const passMessage = {
-        // userId: 2,
-        userId: userID,
-        auctionId: id,
-        room: id,
-        bid: currentOriginPrice + plusPrice,
-        // bid: plusPrice,
-      };
-      setPlusPrice(0);
-      // socket.emit("join_room", id);
-      socket.emit("chat message", passMessage);
-      console.log(passMessage);
+      if (!userToken) {
+        alert("請先進行會員登入 ... 點擊OK後，將跳轉至會員登入專區");
+        setTimeout(() => {
+          navigate("/profile");
+        }, 500);
+      } else {
+        const passMessage = {
+          userId: userToken,
+          auctionId: id,
+          room: id,
+          bid: productInfo.currentPrice + plusPrice,
+        };
+        setPlusPrice(0);
+        socketRef.current.emit("chat message", passMessage);
+        console.log(passMessage);
+      }
     } else {
       alert("此商品競標已結束！");
     }
   };
 
   useEffect(() => {
-    socket.emit("joinRoom", { room: id });
-    socket.on("chat message", (data) => {
-      setCurrentOriginPrice(data);
+    socketRef.current = io.connect("https://claudia-teng.com/", {
+      transports: ["websocket", "polling", "flashsocket"],
+    });
+    socketRef.current.emit("joinRoom", { room: id });
+    socketRef.current.on("chat message", (data) => {
       console.log(data);
+      setProductInfo({
+        currentUser: data.currentUserName,
+        currentPrice: data.currentPrice,
+        currentBidCount: data.currentBidCount,
+      });
+    });
+    socketRef.current.on("success", (data) => {
+      setBidSuccessInfoTime(5);
+      console.log(data);
+      setBidSuccess(true);
+      const coundDownTimer = setInterval(() => {
+        setBidSuccessInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidSuccess(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
+    });
+
+    socketRef.current.on("fail", (data) => {
+      setBidFailInfoTime(3);
+      console.log(data);
+      setBidInfo(data);
+      setBidFail(true);
+      const coundDownTimer = setInterval(() => {
+        setBidFailInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidFail(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
     });
   }, []);
 
@@ -221,9 +321,11 @@ const BiddingProduct = () => {
     async function getAuctionProduct() {
       const data = await api.getAuctionProduct(id);
       setAuctionProduct(data);
-      setCurrentOriginPrice(data.currentPrice);
-      setCurrentUser(data.currentUser);
-      setUserID(data.userId);
+      setProductInfo({
+        currentUser: data.currentUser,
+        currentPrice: data.currentPrice,
+        currentBidCount: data.count,
+      });
       console.log(data);
     }
     getAuctionProduct();
@@ -232,130 +334,169 @@ const BiddingProduct = () => {
   if (!auctionProduct) {
     return null;
   }
-
+  console.log(bidSuccess);
   return (
-    <Wrapper>
-      <MainImage src={auctionProduct.main_image} />
-      <Details>
-        <Title>{auctionProduct.title}</Title>
-        <ID style={{ marginBottom: "10px" }}>{auctionProduct.id}</ID>
-        <PriceWrapper>
-          <Price
+    <>
+      <Wrapper>
+        {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
+        {bidSuccess ? (
+          <>
+            <PopUpMessage>
+              <PopUpImg src={popUpImages.success} alt="Bid-success" />
+              <PopUpText>出價成功</PopUpText>
+              <PopUpNote>{bidSuccessInfoTime} 秒後自動關閉 ...</PopUpNote>
+            </PopUpMessage>
+            <BlackAllLayout />
+          </>
+        ) : (
+          ""
+        )}
+        {bidFail ? (
+          bidInfo === "出價次數過於頻繁，請放慢速度！(拜託)" ? (
+            <>
+              <PopUpMessage>
+                <PopUpImg src={popUpImages.freq} alt="Bid-fail-freq" />
+                <PopUpText style={{ fontSize: "25px" }}>{bidInfo}</PopUpText>
+                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+              </PopUpMessage>
+              <BlackAllLayout />
+            </>
+          ) : (
+            <>
+              <PopUpMessage>
+                <PopUpImg src={popUpImages.fail} alt="Bid-fail" />
+                <PopUpText>{bidInfo}</PopUpText>
+                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+              </PopUpMessage>
+              <BlackAllLayout />
+            </>
+          )
+        ) : (
+          ""
+        )}
+        <MainImage src={auctionProduct.main_image} />
+        <Details>
+          <Title>{auctionProduct.title}</Title>
+          <ID style={{ marginBottom: "10px" }}>{auctionProduct.id}</ID>
+          <PriceWrapper>
+            <Price
+              style={{
+                marginTop: "0px",
+                border: "none",
+                paddingBottom: "0",
+                fontWeight: "bold",
+              }}
+            >
+              目前出價{" "}
+              <span style={{ color: "red" }}>${productInfo.currentPrice}</span>
+            </Price>
+            <CountPrice>{productInfo.currentBidCount} 次出價</CountPrice>
+          </PriceWrapper>
+          <DetailWrap>
+            <DetailTitle>數量</DetailTitle>
+            {auctionProduct.stock} 件
+          </DetailWrap>
+          <HighestPerson>
+            <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
+            {productInfo.currentUser}
+          </HighestPerson>
+          <BiddingButtonWrapper style={{ marginTop: "30px" }}>
+            <ButtonTitle>出價增額</ButtonTitle>
+            <PriceButton
+              value="100"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              100
+            </PriceButton>
+            <PriceButton
+              value="500"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              500
+            </PriceButton>
+            <PriceButton
+              value="1000"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              1000
+            </PriceButton>
+          </BiddingButtonWrapper>
+          <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
+            <UserNowBiddingPrice>
+              {plusPrice === 0
+                ? !disabled
+                  ? "請點擊按鈕進行出價"
+                  : "此商品競標已截止"
+                : `${plusPrice + productInfo.currentPrice}`}
+            </UserNowBiddingPrice>
+            <BiddingButton
+              disabled={disabled}
+              onClick={() => {
+                setPricetoServer();
+              }}
+            >
+              我要出價
+            </BiddingButton>
+            <BiddingButton
+              onClick={(e) => {
+                resetButton(e);
+              }}
+              style={{
+                flexBasis: "350px",
+                marginLeft: "0",
+                marginTop: "15px",
+                fontSize: "18px",
+              }}
+            >
+              出價歸零
+            </BiddingButton>
+          </UserBiddingPriceWrapper>
+          <BiddingLastTimeDetail
+            auctionProduct={auctionProduct}
+            setDisabled={setDisabled}
+          />
+          <DetailWrap>
+            <DetailTitle>截止時間</DetailTitle>
+            {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
+            {new Date(Date.parse(auctionProduct.deadline)).getMonth() + 1}/
+            {new Date(Date.parse(auctionProduct.deadline)).getDate()}{" "}
+            {new Date(Date.parse(auctionProduct.deadline)).getHours()}:
+            {new Date(Date.parse(auctionProduct.deadline)).getMinutes()}:
+            {new Date(Date.parse(auctionProduct.deadline)).getSeconds()}
+          </DetailWrap>
+          <DetailWrap>
+            <DetailTitle>付款方式</DetailTitle>
+            {auctionProduct.payment}
+          </DetailWrap>
+          <DetailWrap
             style={{
-              marginTop: "0px",
-              border: "none",
-              paddingBottom: "0",
-              fontWeight: "bold",
+              marginBottom: "15px",
+              paddingBottom: "15px",
             }}
           >
-            目前出價 <span style={{ color: "red" }}>${currentOriginPrice}</span>
-          </Price>
-          <CountPrice>{auctionProduct.count} 次出價</CountPrice>
-        </PriceWrapper>
-        <DetailWrap>
-          <DetailTitle>數量</DetailTitle>
-          {auctionProduct.stock} 件
-        </DetailWrap>
-        <HighestPerson>
-          <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
-          {auctionProduct.currentUser}
-        </HighestPerson>
-        <BiddingButtonWrapper style={{ marginTop: "30px" }}>
-          <ButtonTitle>出價增額</ButtonTitle>
-          <PriceButton
-            value="100"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            100
-          </PriceButton>
-          <PriceButton
-            value="500"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            500
-          </PriceButton>
-          <PriceButton
-            value="1000"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            1000
-          </PriceButton>
-        </BiddingButtonWrapper>
-        <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
-          <UserNowBiddingPrice>
-            {plusPrice === 0
-              ? !disabled
-                ? "請點擊按鈕進行出價"
-                : "此商品競標已截止"
-              : `${plusPrice + currentOriginPrice}`}
-          </UserNowBiddingPrice>
-          <BiddingButton
-            disabled={disabled}
-            onClick={() => {
-              setPricetoServer();
-            }}
-          >
-            我要出價
-          </BiddingButton>
-          <BiddingButton
-            onClick={(e) => {
-              resetButton(e);
-            }}
-            style={{
-              flexBasis: "350px",
-              marginLeft: "0",
-              marginTop: "15px",
-              fontSize: "18px",
-            }}
-          >
-            出價歸零
-          </BiddingButton>
-        </UserBiddingPriceWrapper>
-        <BiddingLastTimeDetail
-          auctionProduct={auctionProduct}
-          setDisabled={setDisabled}
-        />
-        <DetailWrap>
-          <DetailTitle>截止時間</DetailTitle>
-          {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
-          {new Date(Date.parse(auctionProduct.deadline)).getMonth() + 1}/
-          {new Date(Date.parse(auctionProduct.deadline)).getDate()}{" "}
-          {new Date(Date.parse(auctionProduct.deadline)).getHours()}:
-          {new Date(Date.parse(auctionProduct.deadline)).getMinutes()}:
-          {new Date(Date.parse(auctionProduct.deadline)).getSeconds()}
-        </DetailWrap>
-        <DetailWrap>
-          <DetailTitle>付款方式</DetailTitle>
-          {auctionProduct.payment}
-        </DetailWrap>
-        <DetailWrap
-          style={{
-            marginBottom: "15px",
-            paddingBottom: "15px",
-          }}
-        >
-          <DetailTitle>運費</DetailTitle>
-          {auctionProduct.shipping} 元
-        </DetailWrap>
+            <DetailTitle>運費</DetailTitle>
+            {auctionProduct.shipping} 元
+          </DetailWrap>
 
-        <Description>{auctionProduct.description}</Description>
-      </Details>
-      <Story>
-        <StoryTitle>細部說明</StoryTitle>
-        <StoryContent>{auctionProduct.story}</StoryContent>
-      </Story>
-      <Images>
-        {auctionProduct.images.map((image, index) => (
-          <Image src={image} key={index} />
-        ))}
-      </Images>
-    </Wrapper>
+          <Description>{auctionProduct.description}</Description>
+        </Details>
+        <Story>
+          <StoryTitle>細部說明</StoryTitle>
+          <StoryContent>{auctionProduct.story}</StoryContent>
+        </Story>
+        <Images>
+          {auctionProduct.images.map((image, index) => (
+            <Image src={image} key={index} />
+          ))}
+        </Images>
+      </Wrapper>
+    </>
   );
 };
 
