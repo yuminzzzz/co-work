@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
 import io from "socket.io-client";
@@ -164,20 +164,19 @@ const BiddingLastTimeDetail = (props) => {
 
 const BiddingProduct = () => {
   const [auctionProduct, setAuctionProduct] = useState();
+  const socketRef = useRef();
   const { id } = useParams();
   const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
   const [plusPrice, setPlusPrice] = useState(0);
   const [currentUser, setCurrentUser] = useState();
   const [userID, setUserID] = useState();
   const [disabled, setDisabled] = useState();
+  const [userToken, setUserToken] = useState(
+    localStorage.getItem("userToken") || ""
+  );
   // const socket = io.connect("https://claudia-teng.com/");
-  const socket = io.connect("https://claudia-teng.com/", {
-    // forceNew: true,
-    transports: ["websocket", "polling", "flashsocket"],
-    // extraHeaders: {
-    //   Authorization: `Bearer`,
-    // },
-  });
+  // const socket;
+
   const clickButton = (e) => {
     e.preventDefault();
     if (!disabled) {
@@ -202,7 +201,7 @@ const BiddingProduct = () => {
       };
       setPlusPrice(0);
       // socket.emit("join_room", id);
-      socket.emit("chat message", passMessage);
+      socketRef.current.emit("chat message", passMessage);
       console.log(passMessage);
     } else {
       alert("此商品競標已結束！");
@@ -210,8 +209,15 @@ const BiddingProduct = () => {
   };
 
   useEffect(() => {
-    socket.emit("joinRoom", { room: id });
-    socket.on("chat message", (data) => {
+    socketRef.current = io.connect("https://claudia-teng.com/", {
+      // forceNew: true,
+      transports: ["websocket", "polling", "flashsocket"],
+      extraHeaders: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    socketRef.current.emit("joinRoom", { room: id });
+    socketRef.current.on("chat message", (data) => {
       setCurrentOriginPrice(data);
       console.log(data);
     });
