@@ -297,7 +297,7 @@ const BiddingProduct = () => {
         {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
         <PopUpMessage>
           <PopUpImg
-            src="https://img.moegirl.org.cn/common/9/9d/Rella.jpg"
+            src="https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidSuccess.jpg?raw=true"
             alt=""
           />
           <PopUpText>出價成功</PopUpText>
