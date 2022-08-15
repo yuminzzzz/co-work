@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
 import io from "socket.io-client";
+import Confetti from "react-confetti";
 
 import {
   Wrapper,
@@ -163,19 +164,20 @@ const BiddingLastTimeDetail = (props) => {
 };
 
 const BiddingProduct = () => {
+  const userToken = localStorage.getItem("userToken") || "";
+  let navigate = useNavigate();
   const [auctionProduct, setAuctionProduct] = useState();
   const socketRef = useRef();
   const { id } = useParams();
-  const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
+  const [productInfo, setProductInfo] = useState({
+    currentPrice: 0,
+    currentBidCount: 0,
+    currentUser: "",
+  });
   const [plusPrice, setPlusPrice] = useState(0);
-  const [currentUser, setCurrentUser] = useState();
-  const [userID, setUserID] = useState();
   const [disabled, setDisabled] = useState();
-  const [userToken, setUserToken] = useState(
-    localStorage.getItem("userToken") || ""
-  );
-  // const socket = io.connect("https://claudia-teng.com/");
-  // const socket;
+  const [bidSuccess, setBidSuccess] = useState(false);
+  const [bidInfo, setBidInfo] = useState("");
 
   const clickButton = (e) => {
     e.preventDefault();
@@ -191,18 +193,22 @@ const BiddingProduct = () => {
 
   const setPricetoServer = () => {
     if (!disabled) {
-      const passMessage = {
-        // userId: 2,
-        userId: userID,
-        auctionId: id,
-        room: id,
-        bid: currentOriginPrice + plusPrice,
-        // bid: plusPrice,
-      };
-      setPlusPrice(0);
-      // socket.emit("join_room", id);
-      socketRef.current.emit("chat message", passMessage);
-      console.log(passMessage);
+      if (!userToken) {
+        alert("請先進行會員登入 ... 點擊OK後，將跳轉至會員登入專區");
+        setTimeout(() => {
+          navigate("/profile");
+        }, 500);
+      } else {
+        const passMessage = {
+          userId: userToken,
+          auctionId: id,
+          room: id,
+          bid: productInfo.currentPrice + plusPrice,
+        };
+        setPlusPrice(0);
+        socketRef.current.emit("chat message", passMessage);
+        console.log(passMessage);
+      }
     } else {
       alert("此商品競標已結束！");
     }
@@ -210,15 +216,25 @@ const BiddingProduct = () => {
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
-      // forceNew: true,
       transports: ["websocket", "polling", "flashsocket"],
-      extraHeaders: {
-        Authorization: `Bearer ${userToken}`,
-      },
     });
     socketRef.current.emit("joinRoom", { room: id });
     socketRef.current.on("chat message", (data) => {
-      setCurrentOriginPrice(data);
+      console.log(data);
+      setProductInfo({
+        currentUser: data.currentUserName,
+        currentPrice: data.currentPrice,
+        currentBidCount: data.currentBidCount,
+      });
+    });
+    socketRef.current.on("success", (data) => {
+      console.log(data);
+      setBidSuccess(true);
+      setTimeout(() => {
+        setBidSuccess(false);
+      }, 5000);
+    });
+    socketRef.current.on("fail", (data) => {
       console.log(data);
     });
   }, []);
@@ -227,9 +243,11 @@ const BiddingProduct = () => {
     async function getAuctionProduct() {
       const data = await api.getAuctionProduct(id);
       setAuctionProduct(data);
-      setCurrentOriginPrice(data.currentPrice);
-      setCurrentUser(data.currentUser);
-      setUserID(data.userId);
+      setProductInfo({
+        currentUser: data.currentUser,
+        currentPrice: data.currentPrice,
+        currentBidCount: data.count,
+      });
       console.log(data);
     }
     getAuctionProduct();
@@ -238,9 +256,10 @@ const BiddingProduct = () => {
   if (!auctionProduct) {
     return null;
   }
-
+  console.log(bidSuccess);
   return (
     <Wrapper>
+      {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
       <MainImage src={auctionProduct.main_image} />
       <Details>
         <Title>{auctionProduct.title}</Title>
@@ -254,9 +273,10 @@ const BiddingProduct = () => {
               fontWeight: "bold",
             }}
           >
-            目前出價 <span style={{ color: "red" }}>${currentOriginPrice}</span>
+            目前出價{" "}
+            <span style={{ color: "red" }}>${productInfo.currentPrice}</span>
           </Price>
-          <CountPrice>{auctionProduct.count} 次出價</CountPrice>
+          <CountPrice>{productInfo.currentBidCount} 次出價</CountPrice>
         </PriceWrapper>
         <DetailWrap>
           <DetailTitle>數量</DetailTitle>
@@ -264,7 +284,7 @@ const BiddingProduct = () => {
         </DetailWrap>
         <HighestPerson>
           <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
-          {auctionProduct.currentUser}
+          {productInfo.currentUser}
         </HighestPerson>
         <BiddingButtonWrapper style={{ marginTop: "30px" }}>
           <ButtonTitle>出價增額</ButtonTitle>
@@ -299,7 +319,7 @@ const BiddingProduct = () => {
               ? !disabled
                 ? "請點擊按鈕進行出價"
                 : "此商品競標已截止"
-              : `${plusPrice + currentOriginPrice}`}
+              : `${plusPrice + productInfo.currentPrice}`}
           </UserNowBiddingPrice>
           <BiddingButton
             disabled={disabled}
