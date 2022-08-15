@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import styled from "styled-components";
 
-import api from '../../utils/api';
-import ProductVariants from './ProductVariants';
+import api from "../../utils/api";
+import ProductVariants from "./ProductVariants";
 
 const Wrapper = styled.div`
   max-width: 960px;
@@ -11,7 +11,6 @@ const Wrapper = styled.div`
   padding: 65px 0 49px;
   display: flex;
   flex-wrap: wrap;
-
   @media screen and (max-width: 1279px) {
     padding: 0 0 32px;
   }
@@ -22,6 +21,7 @@ const MainImage = styled.img`
 
   @media screen and (max-width: 1279px) {
     width: 100%;
+    margin-top: 100px;
   }
 `;
 
@@ -85,7 +85,7 @@ const Detail = styled.div`
 
   @media screen and (max-width: 1279px) {
     line-height: 24px;
-    font-size: 14px;
+    font-size: 16px;
   }
 `;
 
@@ -142,7 +142,7 @@ const StoryTitle = styled.div`
   }
 
   &::after {
-    content: '';
+    content: "";
     height: 1px;
     flex-grow: 1;
     background-color: #3f3a3a;
@@ -163,7 +163,7 @@ const StoryContent = styled.div`
   @media screen and (max-width: 1279px) {
     line-height: 25px;
     margin-top: 12px;
-    font-size: 14px;
+    font-size: 16px;
   }
 `;
 
@@ -177,6 +177,7 @@ const Images = styled.div`
 `;
 
 const Image = styled.img`
+  width: 960px;
   @media screen and (max-width: 1279px) {
     width: 100%;
   }
@@ -232,3 +233,17 @@ function Product() {
 }
 
 export default Product;
+export {
+  Wrapper,
+  MainImage,
+  Details,
+  Title,
+  ID,
+  Price,
+  Description,
+  Story,
+  StoryTitle,
+  StoryContent,
+  Images,
+  Image,
+};

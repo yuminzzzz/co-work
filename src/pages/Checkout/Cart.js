@@ -1,8 +1,8 @@
-import { useContext } from 'react';
-import styled from 'styled-components';
+import { useContext } from "react";
+import styled from "styled-components";
 
-import CartContext from '../../contexts/CartContext';
-import trash from './trash.png';
+import CartContext from "../../contexts/CartContext";
+import trash from "./trash.png";
 
 const Header = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const Quantity = styled.div`
   padding-left: 20px;
 
   @media screen and (max-width: 1279px) {
-    ${(props) => props.hideOnMobile && 'display: none;'}
+    ${(props) => props.hideOnMobile && "display: none;"}
   }
 `;
 
@@ -31,7 +31,7 @@ const UnitPrice = styled.div`
   padding-left: 12px;
 
   @media screen and (max-width: 1279px) {
-    ${(props) => props.hideOnMobile && 'display: none;'}
+    ${(props) => props.hideOnMobile && "display: none;"}
   }
 `;
 
@@ -40,7 +40,7 @@ const Price = styled.div`
   padding-left: 15px;
 
   @media screen and (max-width: 1279px) {
-    ${(props) => props.hideOnMobile && 'display: none;'}
+    ${(props) => props.hideOnMobile && "display: none;"}
   }
 `;
 
@@ -127,7 +127,7 @@ const ItemQuantity = styled.div`
 `;
 
 const ItemQuantityName = styled.div`
-  ${(props) => props.hideOnDesktop && 'display: none;'}
+  ${(props) => props.hideOnDesktop && "display: none;"}
 
   @media screen and (max-width: 1279px) {
     display: block;
@@ -159,7 +159,7 @@ const ItemUnitPrice = styled.div`
 `;
 
 const ItemUnitPriceName = styled.div`
-  ${(props) => props.hideOnDesktop && 'display: none;'}
+  ${(props) => props.hideOnDesktop && "display: none;"}
 
   @media screen and (max-width: 1279px) {
     display: block;
@@ -184,7 +184,7 @@ const ItemPrice = styled.div`
 `;
 
 const ItemPriceName = styled.div`
-  ${(props) => props.hideOnDesktop && 'display: none;'}
+  ${(props) => props.hideOnDesktop && "display: none;"}
 
   @media screen and (max-width: 1279px) {
     display: block;
@@ -230,6 +230,7 @@ function Cart() {
             <ItemDetails>
               <ItemName>{item.name}</ItemName>
               <ItemID>{item.id}</ItemID>
+              {/* {item.isStylish?} */}
               <ItemColorName>顏色｜{item.color.name}</ItemColorName>
               <ItemSize>尺寸｜{item.size}</ItemSize>
             </ItemDetails>
