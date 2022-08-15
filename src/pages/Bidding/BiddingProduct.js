@@ -130,12 +130,13 @@ const PopUpMessage = styled.div`
   border-radius: 15px;
   position: absolute;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const PopUpImg = styled.img`
   width: 200px;
-  position: absolute;
-  top: 0;
   height: 200px;
 `;
 
@@ -143,6 +144,16 @@ const PopUpText = styled.div`
   text-align: center;
   vertical-align: middle;
   font-size: 40px;
+  ${"" /* line-height: 130px; */}
+  margin-top: 40px;
+`;
+
+const PopUpNote = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  margin-top: 15px;
 `;
 
 const BiddingLastTimeDetail = (props) => {
@@ -211,7 +222,16 @@ const BiddingProduct = () => {
   const [plusPrice, setPlusPrice] = useState(0);
   const [disabled, setDisabled] = useState();
   const [bidSuccess, setBidSuccess] = useState(false);
+  const [bidFail, setBidFail] = useState(false);
   const [bidInfo, setBidInfo] = useState("");
+  const [bidSuccessInfoTime, setBidSuccessInfoTime] = useState(5);
+  const [bidFailInfoTime, setBidFailInfoTime] = useState(3);
+  const popUpImages = {
+    success:
+      "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidSuccess-removebg-preview.png?raw=true",
+    fail: "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidFail-removebg-preview.png?raw=true",
+    freq: "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidFreq-removebg-preview.png?raw=true",
+  };
 
   const clickButton = (e) => {
     e.preventDefault();
@@ -264,12 +284,34 @@ const BiddingProduct = () => {
     socketRef.current.on("success", (data) => {
       console.log(data);
       setBidSuccess(true);
-      setTimeout(() => {
-        setBidSuccess(false);
-      }, 5000);
+      const coundDownTimer = setInterval(() => {
+        setBidSuccessInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidSuccess(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
     });
+
     socketRef.current.on("fail", (data) => {
       console.log(data);
+      setBidInfo(data);
+      setBidFail(true);
+      const coundDownTimer = setInterval(() => {
+        setBidFailInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidFail(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
     });
   }, []);
 
@@ -295,14 +337,41 @@ const BiddingProduct = () => {
     <>
       <Wrapper>
         {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
-        <PopUpMessage>
-          <PopUpImg
-            src="https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidSuccess.jpg?raw=true"
-            alt=""
-          />
-          <PopUpText>出價成功</PopUpText>
-        </PopUpMessage>
-        <BlackAllLayout />
+        {bidSuccess ? (
+          <>
+            <PopUpMessage>
+              <PopUpImg src={popUpImages.success} alt="Bid-success" />
+              <PopUpText>出價成功</PopUpText>
+              <PopUpNote>{bidSuccessInfoTime} 秒後自動關閉 ...</PopUpNote>
+            </PopUpMessage>
+            <BlackAllLayout />
+          </>
+        ) : (
+          ""
+        )}
+        {bidFail ? (
+          bidInfo === "出價次數過於頻繁，請放慢速度！(拜託)" ? (
+            <>
+              <PopUpMessage>
+                <PopUpImg src={popUpImages.freq} alt="Bid-fail-freq" />
+                <PopUpText style={{ fontSize: "25px" }}>{bidInfo}</PopUpText>
+                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+              </PopUpMessage>
+              <BlackAllLayout />
+            </>
+          ) : (
+            <>
+              <PopUpMessage>
+                <PopUpImg src={popUpImages.fail} alt="Bid-fail" />
+                <PopUpText>{bidInfo}</PopUpText>
+                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+              </PopUpMessage>
+              <BlackAllLayout />
+            </>
+          )
+        ) : (
+          ""
+        )}
         <MainImage src={auctionProduct.main_image} />
         <Details>
           <Title>{auctionProduct.title}</Title>
