@@ -111,6 +111,40 @@ const PriceWrapper = styled.div`
   }
 `;
 
+const BlackAllLayout = styled.div`
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+`;
+
+const PopUpMessage = styled.div`
+  width: 500px;
+  height: 350px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 30vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  position: absolute;
+  z-index: 100;
+`;
+
+const PopUpImg = styled.img`
+  width: 200px;
+  position: absolute;
+  top: 0;
+  height: 200px;
+`;
+
+const PopUpText = styled.div`
+  text-align: center;
+  vertical-align: middle;
+  font-size: 40px;
+`;
+
 const BiddingLastTimeDetail = (props) => {
   const useCountdown = (targetDate) => {
     const countDownDate = new Date(targetDate).getTime();
@@ -258,130 +292,140 @@ const BiddingProduct = () => {
   }
   console.log(bidSuccess);
   return (
-    <Wrapper>
-      {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
-      <MainImage src={auctionProduct.main_image} />
-      <Details>
-        <Title>{auctionProduct.title}</Title>
-        <ID style={{ marginBottom: "10px" }}>{auctionProduct.id}</ID>
-        <PriceWrapper>
-          <Price
+    <>
+      <Wrapper>
+        {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
+        <PopUpMessage>
+          <PopUpImg
+            src="https://img.moegirl.org.cn/common/9/9d/Rella.jpg"
+            alt=""
+          />
+          <PopUpText>出價成功</PopUpText>
+        </PopUpMessage>
+        <BlackAllLayout />
+        <MainImage src={auctionProduct.main_image} />
+        <Details>
+          <Title>{auctionProduct.title}</Title>
+          <ID style={{ marginBottom: "10px" }}>{auctionProduct.id}</ID>
+          <PriceWrapper>
+            <Price
+              style={{
+                marginTop: "0px",
+                border: "none",
+                paddingBottom: "0",
+                fontWeight: "bold",
+              }}
+            >
+              目前出價{" "}
+              <span style={{ color: "red" }}>${productInfo.currentPrice}</span>
+            </Price>
+            <CountPrice>{productInfo.currentBidCount} 次出價</CountPrice>
+          </PriceWrapper>
+          <DetailWrap>
+            <DetailTitle>數量</DetailTitle>
+            {auctionProduct.stock} 件
+          </DetailWrap>
+          <HighestPerson>
+            <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
+            {productInfo.currentUser}
+          </HighestPerson>
+          <BiddingButtonWrapper style={{ marginTop: "30px" }}>
+            <ButtonTitle>出價增額</ButtonTitle>
+            <PriceButton
+              value="100"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              100
+            </PriceButton>
+            <PriceButton
+              value="500"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              500
+            </PriceButton>
+            <PriceButton
+              value="1000"
+              onClick={(e) => {
+                clickButton(e);
+              }}
+            >
+              1000
+            </PriceButton>
+          </BiddingButtonWrapper>
+          <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
+            <UserNowBiddingPrice>
+              {plusPrice === 0
+                ? !disabled
+                  ? "請點擊按鈕進行出價"
+                  : "此商品競標已截止"
+                : `${plusPrice + productInfo.currentPrice}`}
+            </UserNowBiddingPrice>
+            <BiddingButton
+              disabled={disabled}
+              onClick={() => {
+                setPricetoServer();
+              }}
+            >
+              我要出價
+            </BiddingButton>
+            <BiddingButton
+              onClick={(e) => {
+                resetButton(e);
+              }}
+              style={{
+                flexBasis: "350px",
+                marginLeft: "0",
+                marginTop: "15px",
+                fontSize: "18px",
+              }}
+            >
+              出價歸零
+            </BiddingButton>
+          </UserBiddingPriceWrapper>
+          <BiddingLastTimeDetail
+            auctionProduct={auctionProduct}
+            setDisabled={setDisabled}
+          />
+          <DetailWrap>
+            <DetailTitle>截止時間</DetailTitle>
+            {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
+            {new Date(Date.parse(auctionProduct.deadline)).getMonth() + 1}/
+            {new Date(Date.parse(auctionProduct.deadline)).getDate()}{" "}
+            {new Date(Date.parse(auctionProduct.deadline)).getHours()}:
+            {new Date(Date.parse(auctionProduct.deadline)).getMinutes()}:
+            {new Date(Date.parse(auctionProduct.deadline)).getSeconds()}
+          </DetailWrap>
+          <DetailWrap>
+            <DetailTitle>付款方式</DetailTitle>
+            {auctionProduct.payment}
+          </DetailWrap>
+          <DetailWrap
             style={{
-              marginTop: "0px",
-              border: "none",
-              paddingBottom: "0",
-              fontWeight: "bold",
+              marginBottom: "15px",
+              paddingBottom: "15px",
             }}
           >
-            目前出價{" "}
-            <span style={{ color: "red" }}>${productInfo.currentPrice}</span>
-          </Price>
-          <CountPrice>{productInfo.currentBidCount} 次出價</CountPrice>
-        </PriceWrapper>
-        <DetailWrap>
-          <DetailTitle>數量</DetailTitle>
-          {auctionProduct.stock} 件
-        </DetailWrap>
-        <HighestPerson>
-          <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
-          {productInfo.currentUser}
-        </HighestPerson>
-        <BiddingButtonWrapper style={{ marginTop: "30px" }}>
-          <ButtonTitle>出價增額</ButtonTitle>
-          <PriceButton
-            value="100"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            100
-          </PriceButton>
-          <PriceButton
-            value="500"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            500
-          </PriceButton>
-          <PriceButton
-            value="1000"
-            onClick={(e) => {
-              clickButton(e);
-            }}
-          >
-            1000
-          </PriceButton>
-        </BiddingButtonWrapper>
-        <UserBiddingPriceWrapper style={{ marginBottom: "40px" }}>
-          <UserNowBiddingPrice>
-            {plusPrice === 0
-              ? !disabled
-                ? "請點擊按鈕進行出價"
-                : "此商品競標已截止"
-              : `${plusPrice + productInfo.currentPrice}`}
-          </UserNowBiddingPrice>
-          <BiddingButton
-            disabled={disabled}
-            onClick={() => {
-              setPricetoServer();
-            }}
-          >
-            我要出價
-          </BiddingButton>
-          <BiddingButton
-            onClick={(e) => {
-              resetButton(e);
-            }}
-            style={{
-              flexBasis: "350px",
-              marginLeft: "0",
-              marginTop: "15px",
-              fontSize: "18px",
-            }}
-          >
-            出價歸零
-          </BiddingButton>
-        </UserBiddingPriceWrapper>
-        <BiddingLastTimeDetail
-          auctionProduct={auctionProduct}
-          setDisabled={setDisabled}
-        />
-        <DetailWrap>
-          <DetailTitle>截止時間</DetailTitle>
-          {new Date(Date.parse(auctionProduct.deadline)).getFullYear()}/
-          {new Date(Date.parse(auctionProduct.deadline)).getMonth() + 1}/
-          {new Date(Date.parse(auctionProduct.deadline)).getDate()}{" "}
-          {new Date(Date.parse(auctionProduct.deadline)).getHours()}:
-          {new Date(Date.parse(auctionProduct.deadline)).getMinutes()}:
-          {new Date(Date.parse(auctionProduct.deadline)).getSeconds()}
-        </DetailWrap>
-        <DetailWrap>
-          <DetailTitle>付款方式</DetailTitle>
-          {auctionProduct.payment}
-        </DetailWrap>
-        <DetailWrap
-          style={{
-            marginBottom: "15px",
-            paddingBottom: "15px",
-          }}
-        >
-          <DetailTitle>運費</DetailTitle>
-          {auctionProduct.shipping} 元
-        </DetailWrap>
+            <DetailTitle>運費</DetailTitle>
+            {auctionProduct.shipping} 元
+          </DetailWrap>
 
-        <Description>{auctionProduct.description}</Description>
-      </Details>
-      <Story>
-        <StoryTitle>細部說明</StoryTitle>
-        <StoryContent>{auctionProduct.story}</StoryContent>
-      </Story>
-      <Images>
-        {auctionProduct.images.map((image, index) => (
-          <Image src={image} key={index} />
-        ))}
-      </Images>
-    </Wrapper>
+          <Description>{auctionProduct.description}</Description>
+        </Details>
+        <Story>
+          <StoryTitle>細部說明</StoryTitle>
+          <StoryContent>{auctionProduct.story}</StoryContent>
+        </Story>
+        <Images>
+          {auctionProduct.images.map((image, index) => (
+            <Image src={image} key={index} />
+          ))}
+        </Images>
+      </Wrapper>
+    </>
   );
 };
 
