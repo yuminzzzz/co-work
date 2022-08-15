@@ -156,6 +156,7 @@ const UserAvatar = styled.img`
     "" /* box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0; */
   }
   border: solid 1px rgba(0, 0, 0, 0.2);
+
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -429,9 +430,9 @@ function Profile() {
     bitWin: null,
   });
   const [uploaded, setUploaded] = useState({
-    first: false,
-    second: true,
-    third: false,
+    first: "",
+    second: "",
+    third: "",
   });
   const [isUploaded, setIsUploaded] = useState(null);
   const [launchProductList, setLaunchProductList] = useState({
@@ -439,8 +440,9 @@ function Profile() {
     description: null,
     price: null,
     story: null,
-    mainImage: null,
-    otherImage: [null, null],
+    main_image: null,
+    other_images_1: null,
+    other_images_2: null,
   });
   const styling = {
     direction() {
@@ -582,6 +584,7 @@ function Profile() {
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
+    getUserProfile(token);
   };
   const getUserProfile = async (token) => {
     const response = await fetch(
@@ -725,15 +728,21 @@ function Profile() {
       e.target.style.color = "black";
     }
   };
+  const formData = new FormData();
+  for (let item in launchProductList) {
+    formData.append(item, launchProductList[item]);
+  }
+
+
+
   const launchProduct = async (token) => {
     if (Object.values(launchProductList).some((item) => item === null)) return;
     await fetch(`https://claudia-teng.com/api/1.0/second-hand/user`, {
       method: "POST",
       headers: new Headers({
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       }),
-      body: launchProductList,
+      body: formData,
     });
     setUploaded({
       first: null,
@@ -746,10 +755,126 @@ function Profile() {
       description: null,
       price: null,
       story: null,
-      mainImage: null,
-      otherImage: [null, null],
+      main_image: null,
+      other_images_1: null,
+      other_images_2: null,
     });
     alert("刊登成功！");
+  };
+  const photoUpload = (e) => {
+    if (isUploaded) {
+      alert("上傳照片超過上限！");
+      return;
+    }
+
+    if (e.target.files.length === 1) {
+      if (uploaded.first && uploaded.second && uploaded.third) {
+        alert("上傳照片超過上限！");
+        return;
+      } else if (uploaded.second) {
+        setUploaded((pre) => {
+          return {
+            ...pre,
+            third: e.target.files[0],
+          };
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            other_images_2: e.target.files[0],
+          };
+        });
+      } else if (uploaded.first) {
+        setUploaded((pre) => {
+          return {
+            ...pre,
+            second: e.target.files[0],
+          };
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            other_images_1: e.target.files[0],
+          };
+        });
+      } else {
+        setUploaded((pre) => {
+          return {
+            ...pre,
+            first: e.target.files[0],
+          };
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            main_image: e.target.files[0],
+          };
+        });
+      }
+    }
+
+    if (e.target.files.length === 2) {
+      if (uploaded.second) {
+        setUploaded({
+          first: "",
+          second: "",
+          third: "",
+        });
+        alert("上傳照片超過上限！");
+        return;
+      } else if (uploaded.first) {
+        setUploaded((pre) => {
+          return {
+            ...pre,
+            second: e.target.files[0],
+            third: e.target.files[1],
+          };
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            other_images_1: e.target.files[0],
+            other_images_2: e.target.files[1],
+          };
+        });
+      } else {
+        setUploaded((pre) => {
+          return {
+            ...pre,
+            first: e.target.files[0],
+            second: e.target.files[1],
+          };
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            main_image: e.target.files[0],
+            other_images_1: e.target.files[1],
+          };
+        });
+      }
+    }
+
+    if (e.target.files.length === 3) {
+      if (!uploaded.first) {
+        setUploaded({
+          first: e.target.files[0],
+          second: e.target.files[1],
+          third: e.target.files[2],
+        });
+        setLaunchProductList((pre) => {
+          return {
+            ...pre,
+            main_image: e.target.files[0],
+            other_images_1: e.target.files[1],
+            other_images_2: e.target.files[2],
+          };
+        });
+      } else {
+        alert("上傳照片超過上限！");
+        return;
+      }
+    }
   };
   useEffect(() => {
     setValid({
@@ -759,7 +884,7 @@ function Profile() {
     });
   }, [isRegisterPage]);
   useEffect(() => {
-    if (Object.values(uploaded).every((item) => item === true)) {
+    if (Object.values(uploaded).every((item) => item !== "")) {
       setIsUploaded(true);
     }
   }, [uploaded]);
@@ -857,14 +982,7 @@ function Profile() {
                             display: "none",
                           }}
                           onChange={(e) => {
-                            if (e.target.files.length > 3) {
-                              alert("上傳圖片數量已超過上限");
-                              return;
-                            } else if (
-                              e.target.files.length < 3 &&
-                              e.target.files.length > 0
-                            ) {
-                            }
+                            photoUpload(e);
                           }}
                         ></input>
                         <LaunchButton>選擇照片</LaunchButton>
@@ -873,9 +991,24 @@ function Profile() {
                     </LaunchBody>
                     {uploaded.first && (
                       <PhotoContainer style={styling.photoContainerWidth()}>
-                        <Photo></Photo>
-                        <Photo></Photo>
-                        <Photo></Photo>
+                        <Photo
+                          src={
+                            uploaded.first &&
+                            URL.createObjectURL(uploaded.first)
+                          }
+                        ></Photo>
+                        <Photo
+                          src={
+                            uploaded.second &&
+                            URL.createObjectURL(uploaded.second)
+                          }
+                        ></Photo>
+                        <Photo
+                          src={
+                            uploaded.third &&
+                            URL.createObjectURL(uploaded.third)
+                          }
+                        ></Photo>
                       </PhotoContainer>
                     )}
                     {isUploaded && (
