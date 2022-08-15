@@ -168,8 +168,16 @@ const BiddingProduct = () => {
   const [currentOriginPrice, setCurrentOriginPrice] = useState(0);
   const [plusPrice, setPlusPrice] = useState(0);
   const [currentUser, setCurrentUser] = useState();
+  const [userID, setUserID] = useState();
   const [disabled, setDisabled] = useState();
-  const socket = io.connect("https://weigen.online");
+  // const socket = io.connect("https://claudia-teng.com/");
+  const socket = io.connect("https://claudia-teng.com/", {
+    // forceNew: true,
+    transports: ["websocket", "polling", "flashsocket"],
+    // extraHeaders: {
+    //   Authorization: `Bearer`,
+    // },
+  });
   const clickButton = (e) => {
     e.preventDefault();
     if (!disabled) {
@@ -185,11 +193,12 @@ const BiddingProduct = () => {
   const setPricetoServer = () => {
     if (!disabled) {
       const passMessage = {
-        userId: 2,
-        // userId: currentUser,
+        // userId: 2,
+        userId: userID,
         auctionId: id,
         room: id,
         bid: currentOriginPrice + plusPrice,
+        // bid: plusPrice,
       };
       setPlusPrice(0);
       // socket.emit("join_room", id);
@@ -201,10 +210,10 @@ const BiddingProduct = () => {
   };
 
   useEffect(() => {
-    socket.emit("join_room", id);
+    socket.emit("joinRoom", { room: id });
     socket.on("chat message", (data) => {
       setCurrentOriginPrice(data);
-      // console.log(data);
+      console.log(data);
     });
   }, []);
 
@@ -214,6 +223,7 @@ const BiddingProduct = () => {
       setAuctionProduct(data);
       setCurrentOriginPrice(data.currentPrice);
       setCurrentUser(data.currentUser);
+      setUserID(data.userId);
       console.log(data);
     }
     getAuctionProduct();

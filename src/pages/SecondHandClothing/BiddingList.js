@@ -76,7 +76,6 @@ const EndAlert = styled.div`
 `;
 
 const BiddingList = (props) => {
-  const [end, setEnd] = useState(false);
   const { id, title, currentPrice, deadline, image, count, lastTime } =
     props.auctions;
 
