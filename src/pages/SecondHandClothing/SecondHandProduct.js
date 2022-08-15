@@ -40,6 +40,7 @@ const SecondHandProduct = () => {
   if (!secondHandProduct) {
     return null;
   }
+  console.log(secondHandProduct);
   return (
     <Wrapper>
       <MainImage src={secondHandProduct.main_image} />

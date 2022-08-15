@@ -133,6 +133,9 @@ const PopUpMessage = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  @media screen and (max-width: 1279px) {
+    top: 80vh;
+  }
 `;
 
 const PopUpImg = styled.img`
@@ -338,7 +341,11 @@ const BiddingProduct = () => {
   return (
     <>
       <Wrapper>
-        {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
+        {bidSuccess ? (
+          <Confetti style={{ width: "100%", height: "100%" }} />
+        ) : (
+          ""
+        )}
         {bidSuccess ? (
           <>
             <PopUpMessage>
