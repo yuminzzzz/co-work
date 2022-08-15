@@ -10,6 +10,7 @@ const BiddingThing = styled(Link)`
   border: solid 1px rgb(241, 241, 241);
   border-radius: 10px;
   color: black;
+  position: relative;
 `;
 
 const DeadLine = styled.div`
@@ -54,6 +55,26 @@ const BidButton = styled.div`
   }
 `;
 
+const EndAlert = styled.div`
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border-radius: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  &:before {
+    content: "已結標";
+    color: white;
+    font-size: 32px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+`;
+
 const BiddingList = (props) => {
   const { id, title, currentPrice, deadline, image, count, lastTime } =
     props.auctions;
@@ -82,7 +103,6 @@ const BiddingList = (props) => {
     );
     const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
-
     return [days, hours, minutes, seconds];
   };
 
@@ -94,6 +114,11 @@ const BiddingList = (props) => {
     return (
       <>
         <BiddingThing to={`/bidding/${id}`} key={id}>
+          {lastTime[0] + lastTime[1] + lastTime[2] + lastTime[3] <= 0 ? (
+            <EndAlert></EndAlert>
+          ) : (
+            ""
+          )}
           <DeadLine>
             {new Date(Date.parse(deadline)).getMonth() + 1}/
             {new Date(Date.parse(deadline)).getDate()}{" "}

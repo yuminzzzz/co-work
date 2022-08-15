@@ -11,7 +11,6 @@ const Wrapper = styled.div`
   padding: 65px 0 49px;
   display: flex;
   flex-wrap: wrap;
-
   @media screen and (max-width: 1279px) {
     padding: 0 0 32px;
   }
