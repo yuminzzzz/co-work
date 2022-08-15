@@ -4,11 +4,11 @@ import styled from "styled-components";
 import api from "../../utils/api";
 import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
+import trash from "./cart-remove.png";
 
 const Wrapper = styled.div`
   min-height: calc(100vh - 255px);
   background: #f0f2f5;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,6 +31,12 @@ const LoginContainer = styled.div`
 const Logo = styled.img.attrs({ src: logo })`
   width: 258px;
   height: 48px;
+`;
+
+const Trash = styled.img.attrs({ src: trash })`
+  position: absolute;
+  bottom: 5px;
+  right: 3px;
 `;
 
 const InputSection = styled.div`
@@ -65,7 +71,11 @@ const LoginButton = styled.button`
   font-weight: 500;
   font-size: 21px;
   margin: 6px 0;
-  ${"" /* :hover :background-color: #dfdfd; */}
+  cursor: pointer;
+  &:hover {
+    transition: all 0.2s ease-in;
+    background-color: #dfdfd;
+  }
 `;
 
 const Divider = styled.div`
@@ -85,6 +95,7 @@ const FacebookLoginButton = styled.button`
   font-weight: 500;
   font-size: 21px;
   margin: 6px 0;
+  cursor: pointer;
 `;
 
 const RegisterButton = styled.button`
@@ -97,15 +108,24 @@ const RegisterButton = styled.button`
   padding: 0 16px;
   border-radius: 6px;
   text-align: center;
+  cursor: pointer;
 `;
 
-const ReturnLoginButton = styled.div`
+const ReturnLastPage = styled.div`
   position: absolute;
-  width: 20px;
-  height: 20px;
-  top: 16px;
-  left: 10px;
+  left: 0;
+  width: 5px;
+  ${"" /* border: solid 1px salmon; */}
+  background-color: salmon;
+  transition: ease 0.2s;
+  height: 100%;
+  top: 0;
+  border-radius: 6px;
   cursor: pointer;
+  &:hover {
+    width: 14px;
+    background-color: orange;
+  }
 `;
 
 // usesrprofile page
@@ -119,7 +139,9 @@ const UserProfileContainer = styled.div`
 `;
 
 const UserInfoContainer = styled.div`
-  border: solid 1px black;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  border-radius: 6px;
   width: 30%;
   height: 600px;
   display: flex;
@@ -129,8 +151,12 @@ const UserInfoContainer = styled.div`
   margin-right: 20px;
 `;
 
-const UserAvatar = styled.div`
-  border: solid 1px black;
+const UserAvatar = styled.img`
+  ${
+    "" /* box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0; */
+  }
+  border: solid 1px rgba(0, 0, 0, 0.2);
+
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -147,16 +173,30 @@ const UserName = styled.h1`
 
 const LogoutButton = styled.button`
   width: 50%;
-  border: solid 1px black;
-  font-size: 24px;
+  border-radius: 6px;
+  border-style: none;
+  background-color: salmon;
+  transition: all 0.25s ease-in;
+  font-size: 16px;
   line-height: 50px;
   letter-spacing: 5px;
   display: block;
+  color: #ffffff;
   cursor: pointer;
+  &:hover {
+    background-color: orange;
+    transform: translateY(-5px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+    font-size: 18px;
+  }
 `;
 
+// feature page
+
 const InfoContainer = styled.div`
-  border: solid 1px black;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  border-radius: 6px;
   width: 70%;
   display: flex;
   flex-direction: column;
@@ -165,20 +205,37 @@ const InfoContainer = styled.div`
   padding: 70px;
 `;
 
-const BidHead = styled.div`
+const InfoHead = styled.div`
   width: 100%;
 `;
 
-const BidHeadButton = styled.button`
+const InfoHeadButton = styled.button`
   font-size: 20px;
   width: 150px;
   line-height: 40px;
   border: solid 1px black;
   cursor: pointer;
+  color: grey;
+  background-color: #f0f2f5;
+  color: #24292f;
+  font-size: 16px;
+  letter-spacing: 5px;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border-bottom: none;
+  ${
+    "" /* &:hover {
+    background-color: orange;
+    color: #ffffff;
+  } */
+  }
 `;
 
-const BidBody = styled.div`
-  border: solid 1px black;
+const InfoBody = styled.div`
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 6px;
   width: 100%;
   height: 400px;
   padding: 30px;
@@ -189,7 +246,8 @@ const BidBody = styled.div`
   }
 `;
 
-const BidItem = styled.div`
+const Item = styled.div`
+  background-color: #ffffff;
   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
   border-radius: 6px;
   display: flex;
@@ -200,9 +258,6 @@ const BidItem = styled.div`
   position: relative;
   overflow: hidden;
   margin: 0 10px;
-  & :hover {
-    background-color: rgba(0, 0, 23, 0.05);
-  }
   cursor: pointer;
 `;
 
@@ -213,36 +268,153 @@ const Shadow = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
 `;
 
-const BidItemImg = styled.img`
+const ItemImg = styled.img`
   width: 100%;
   height: 60%;
+  border-radius: 6px;
 `;
 
-const BidItemBody = styled.div`
+const ItemBody = styled.div`
   height: 40%;
   padding: 15px;
 `;
 
-const BidTitle = styled.p`
+const ItemTitle = styled.p`
   font-size: 18px;
-  margin-bottom: 35px;
+  margin-bottom: 42px;
 `;
 
-const BidPrice = styled.p`
+const ItemPrice = styled.p`
   font-size: 18px;
   color: red;
   margin-bottom: 10px;
 `;
 
-const BidDeadline = styled.p`
+const ItemNote = styled.p`
   font-size: 16px;
   color: grey;
 `;
 
+const EmptyPrompt = styled.div`
+  margin: auto;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+`;
+
+// launch page
+
+const LaunchBody = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  background-color: rgb(255, 99, 71, 0.3);
+  cursor: pointer;
+  border: dashed 2px salmon;
+`;
+
+const LaunchBodyContent = styled.label`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+const LaunchButton = styled.div`
+  border-style: none;
+  background-color: salmon;
+  font-weight: 700;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+`;
+
+const LaunchPrompt = styled.p`
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: grey;
+`;
+
+// photo upload
+
+const PhotoContainer = styled.div`
+  width: 50%;
+  height: 30%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+`;
+
+const Photo = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: 6px;
+  border: dashed 2px salmon;
+`;
+
+// product info
+
+const ProductContainer = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+`;
+
+const ProductDetailInput = styled.input`
+  height: 50px;
+  width: 100%;
+  margin-bottom: 20px;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 10px 20px;
+`;
+
+const ProductDescription = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 10px 20px;
+  ${
+    "" /* &:focus-within {
+    border: solid 1px inherit;
+  } */
+  }
+`;
+
 function Profile() {
-  // const [profile, setProfile] = useState();
+  const [profile, setProfile] = useState(
+    JSON.parse(localStorage.getItem("userProfile")) || null
+  );
+  const [secondHand, setSecondHand] = useState(
+    JSON.parse(localStorage.getItem("userSecondHand")) || []
+  );
   const [userToken, setUserToken] = useState(
     localStorage.getItem("userToken") || []
   );
@@ -253,10 +425,48 @@ function Profile() {
     password: "",
   });
   const [feature, setFeature] = useState({
-    bitWin: true,
-    launch: null,
-    unLaunch: null,
+    launch: true,
+    myLaunch: null,
+    bitWin: null,
   });
+  const [uploaded, setUploaded] = useState({
+    first: false,
+    second: true,
+    third: false,
+  });
+  const [isUploaded, setIsUploaded] = useState(null);
+  const [launchProductList, setLaunchProductList] = useState({
+    title: null,
+    description: null,
+    price: null,
+    story: null,
+    mainImage: null,
+    otherImage: [null, null],
+  });
+  const styling = {
+    direction() {
+      if (feature.launch) {
+        return { flexDirection: "column" };
+      } else {
+        return { flexDirection: "row" };
+      }
+    },
+    uploaded() {
+      if (isUploaded) {
+        return { height: "70%", width: "50%" };
+      } else if (uploaded.first) {
+        return { height: "70%" };
+      }
+    },
+    photoContainerWidth() {
+      if (isUploaded) {
+        return { width: "50%" };
+      } else {
+        return { width: "100%" };
+      }
+    },
+    headButton: ["上架商品", "我的商品", "已得標"],
+  };
   const validation = (e) => {
     if (e.target.placeholder === "請輸入名字") {
       if (e.target.value) {
@@ -301,8 +511,56 @@ function Profile() {
         e.target.style.color = "red";
       }
     }
+    if (e.target.placeholder === "商品名稱") {
+      if (e.target.value) {
+        e.target.style.color = "black";
+        e.target.style.borderColor = "#dddfe2";
+        setLaunchProductList((pre) => {
+          return { ...pre, title: e.target.value };
+        });
+      } else {
+        e.target.style.borderColor = "red";
+        e.target.style.color = "red";
+      }
+    }
+    if (e.target.placeholder === "商品敘述") {
+      if (e.target.value) {
+        e.target.style.color = "black";
+        e.target.style.borderColor = "#dddfe2";
+        setLaunchProductList((pre) => {
+          return { ...pre, description: e.target.value };
+        });
+      } else {
+        e.target.style.borderColor = "red";
+        e.target.style.color = "red";
+      }
+    }
+    if (e.target.placeholder === "設定價位") {
+      let result = /^\d+(,\d{1,2})?$/.test(e.target.value);
+      if (result) {
+        e.target.style.color = "black";
+        e.target.style.borderColor = "#dddfe2";
+        setLaunchProductList((pre) => {
+          return { ...pre, price: e.target.value };
+        });
+      } else {
+        e.target.style.borderColor = "red";
+        e.target.style.color = "red";
+      }
+    }
+    if (e.target.placeholder === "商品細節") {
+      if (e.target.value) {
+        e.target.style.color = "black";
+        e.target.style.borderColor = "#dddfe2";
+        setLaunchProductList((pre) => {
+          return { ...pre, story: e.target.value };
+        });
+      } else {
+        e.target.style.borderColor = "red";
+        e.target.style.color = "red";
+      }
+    }
   };
-
   const register = async () => {
     if (Object.values(valid).some((item) => item === "")) return;
     // 串註冊 api
@@ -326,7 +584,6 @@ function Profile() {
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
   };
-
   const getUserProfile = async (token) => {
     const response = await fetch(
       "https://claudia-teng.com/api/1.0/user/profile",
@@ -337,9 +594,36 @@ function Profile() {
         }),
       }
     );
-    console.log(await response.json());
+    const data = await response.json();
+    localStorage.setItem("userProfile", JSON.stringify(data));
+    setProfile(JSON.parse(localStorage.getItem("userProfile")));
   };
-
+  const getUserSecondHand = async (token) => {
+    const response = await fetch(
+      "https://claudia-teng.com/api/1.0/second-hand/user",
+      {
+        headers: new Headers({
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }),
+      }
+    );
+    const data = await response.json();
+    localStorage.setItem("userSecondHand", JSON.stringify(data.data));
+    setSecondHand(JSON.parse(localStorage.getItem("userSecondHand")));
+  };
+  const deleteUserSecondHand = async (id, token) => {
+    if (window.confirm("確定要下架商品嗎？")) {
+      await fetch(`https://claudia-teng.com/api/1.0/second-hand/user/${id}`, {
+        method: "DELETE",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }),
+      });
+      await getUserSecondHand(token);
+    }
+  };
   const login = async () => {
     const inputCheck = Object.values(valid).filter(
       (item) => item !== ""
@@ -365,8 +649,9 @@ function Profile() {
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
+    await getUserProfile(token);
+    await getUserSecondHand(token);
   };
-
   const fbLogin = async () => {
     const data = {
       provider: "facebook",
@@ -387,35 +672,85 @@ function Profile() {
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
+    getUserSecondHand(token);
   };
-
   const Logout = () => {
     localStorage.removeItem("userToken");
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userSecondHand");
+    setFeature({
+      bitWin: true,
+      launch: null,
+      myLaunch: null,
+    });
     setUserToken([]);
+    setProfile(null);
+    setSecondHand([]);
   };
-
-  const featureSwitch = (e) => {
-    if (e.target.innerText === "已得標") {
+  const featureSwitch = async (e) => {
+    if (e.target.innerText === "上架商品") {
+      e.target.style.backgroundColor = "salmon";
+      e.target.style.color = "#ffffff";
       setFeature({
-        bitWin: true,
-        launch: null,
-        unLaunch: null,
-      });
-    }
-    if (e.target.innerText === "上架") {
-      setFeature({
-        bitWin: null,
         launch: true,
-        unLaunch: null,
-      });
-    }
-    if (e.target.innerText === "下架") {
-      setFeature({
+        myLaunch: null,
         bitWin: null,
+      });
+    } else if (e.target.innerText === "我的商品") {
+      e.target.style.backgroundColor = "salmon";
+      e.target.style.color = "#ffffff";
+      setFeature({
         launch: null,
-        unLaunch: true,
+        myLaunch: true,
+        bitWin: null,
+      });
+    } else if (e.target.innerText === "已得標") {
+      e.target.style.backgroundColor = "salmon";
+      e.target.style.color = "#ffffff";
+      setFeature({
+        launch: null,
+        myLaunch: null,
+        bitWin: true,
       });
     }
+  };
+  const reverseFeatureSwitch = (e) => {
+    if (e.target.innerText === "已得標") {
+      e.target.style.backgroundColor = "#f0f2f5";
+      e.target.style.color = "black";
+    } else if (e.target.innerText === "上架商品") {
+      e.target.style.backgroundColor = "#f0f2f5";
+      e.target.style.color = "black";
+    } else if (e.target.innerText === "下架商品") {
+      e.target.style.backgroundColor = "#f0f2f5";
+      e.target.style.color = "black";
+    }
+  };
+  const launchProduct = async (token) => {
+    if (Object.values(launchProductList).some((item) => item === null)) return;
+    await fetch(`https://claudia-teng.com/api/1.0/second-hand/user`, {
+      method: "POST",
+      headers: new Headers({
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      }),
+      body: launchProductList,
+    });
+    setUploaded({
+      first: null,
+      second: null,
+      third: null,
+    });
+    setIsUploaded(null);
+    setLaunchProductList({
+      title: null,
+      description: null,
+      price: null,
+      story: null,
+      mainImage: null,
+      otherImage: [null, null],
+    });
+    alert("刊登成功！");
   };
   useEffect(() => {
     setValid({
@@ -424,21 +759,24 @@ function Profile() {
       password: "",
     });
   }, [isRegisterPage]);
-
+  useEffect(() => {
+    if (Object.values(uploaded).every((item) => item === true)) {
+      setIsUploaded(true);
+    }
+  }, [uploaded]);
   return (
     <Wrapper>
-      {!userToken.length > 0 ? (
+      {!profile ? (
         <LoginContainer>
           {!isRegisterPage && (
             <>
               <Logo></Logo>
-              <InputSection>
+              <InputSection onBlur={(e) => validation(e)}>
                 <InputContainer>
                   <Input
                     placeholder="請輸入帳號或電子郵件"
                     autoFocus="1"
                     className="accountValid"
-                    onBlur={(e) => validation(e)}
                   ></Input>
                 </InputContainer>
                 <InputContainer>
@@ -446,7 +784,6 @@ function Profile() {
                     placeholder="請輸入密碼"
                     className="passwordValid"
                     type="password"
-                    onBlur={(e) => validation(e)}
                   ></Input>
                 </InputContainer>
               </InputSection>
@@ -462,23 +799,18 @@ function Profile() {
           )}
           {isRegisterPage && (
             <>
-              <ReturnLoginButton onClick={() => setIsRegisterPage(false)}>
-                {"<<"}
-              </ReturnLoginButton>
+              <ReturnLastPage
+                onClick={() => setIsRegisterPage(false)}
+              ></ReturnLastPage>
               <Logo></Logo>
-              <InputSection>
+              <InputSection onBlur={(e) => validation(e)}>
                 <InputContainer>
-                  <Input
-                    placeholder="請輸入名字"
-                    autoFocus="1"
-                    onBlur={(e) => validation(e)}
-                  ></Input>
+                  <Input placeholder="請輸入名字" autoFocus="1"></Input>
                 </InputContainer>
                 <InputContainer>
                   <Input
                     placeholder="請輸入電子郵件"
                     className="accountValid"
-                    onBlur={(e) => validation(e)}
                   ></Input>
                 </InputContainer>
                 <InputContainer>
@@ -486,7 +818,6 @@ function Profile() {
                     placeholder="請輸入6~16位密碼(含1大寫＆小寫英文及數字)"
                     className="passwordValid"
                     type="password"
-                    onBlur={(e) => validation(e)}
                   ></Input>
                 </InputContainer>
               </InputSection>
@@ -498,74 +829,145 @@ function Profile() {
         <UserProfile>
           <UserProfileContainer>
             <UserInfoContainer>
-              <UserAvatar></UserAvatar>
-              <UserName>rqmu0114@gmail.com</UserName>
+              <UserAvatar src={profile.user.picture}></UserAvatar>
+              <UserName> {profile.user.name}</UserName>
               <LogoutButton onClick={Logout}>登出</LogoutButton>
             </UserInfoContainer>
             <InfoContainer>
-              <BidHead>
-                <BidHeadButton onClick={(e) => featureSwitch(e)}>
-                  已得標
-                </BidHeadButton>
-                <BidHeadButton onClick={(e) => featureSwitch(e)}>
-                  上架
-                </BidHeadButton>
-                <BidHeadButton onClick={(e) => featureSwitch(e)}>
-                  下架
-                </BidHeadButton>
-              </BidHead>
-              <BidBody>
-                {feature.bitWin && (
-                  <>
-                    <BidItem>
-                      <Shadow></Shadow>
-                      <BidItemImg></BidItemImg>
-                      <BidItemBody>
-                        <BidTitle>得標商品</BidTitle>
-                        <BidPrice>結標金額</BidPrice>
-                        <BidDeadline>結標日期</BidDeadline>
-                      </BidItemBody>
-                    </BidItem>
-                    <BidItem>
-                      <Shadow></Shadow>
-                      <BidItemImg></BidItemImg>
-                      <BidItemBody>
-                        <BidTitle>得標商品</BidTitle>
-                        <BidPrice>結標金額</BidPrice>
-                        <BidDeadline>結標日期</BidDeadline>
-                      </BidItemBody>
-                    </BidItem>
-                    <BidItem>
-                      <Shadow></Shadow>
-                      <BidItemImg></BidItemImg>
-                      <BidItemBody>
-                        <BidTitle>得標商品</BidTitle>
-                        <BidPrice>結標金額</BidPrice>
-                        <BidDeadline>結標日期</BidDeadline>
-                      </BidItemBody>
-                    </BidItem>
-                    <BidItem>
-                      <Shadow></Shadow>
-                      <BidItemImg></BidItemImg>
-                      <BidItemBody>
-                        <BidTitle>得標商品</BidTitle>
-                        <BidPrice>結標金額</BidPrice>
-                        <BidDeadline>結標日期</BidDeadline>
-                      </BidItemBody>
-                    </BidItem>
-                  </>
-                )}
+              <InfoHead>
+                {styling.headButton.map((item, index) => (
+                  <InfoHeadButton
+                    key={index}
+                    onClick={(e) => featureSwitch(e)}
+                    onBlur={(e) => reverseFeatureSwitch(e)}
+                  >
+                    {item}
+                  </InfoHeadButton>
+                ))}
+              </InfoHead>
+              <InfoBody style={styling.direction()}>
                 {feature.launch && (
                   <>
-                    <h1>launch</h1>
+                    <LaunchBody style={styling.uploaded()}>
+                      <LaunchBodyContent>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/png, image/jpeg"
+                          style={{
+                            display: "none",
+                          }}
+                          onChange={(e) => {
+                            if (e.target.files.length > 3) {
+                              alert("上傳圖片數量已超過上限");
+                              return;
+                            } else if (
+                              e.target.files.length < 3 &&
+                              e.target.files.length > 0
+                            ) {
+                            }
+                          }}
+                        ></input>
+                        <LaunchButton>選擇照片</LaunchButton>
+                        <LaunchPrompt>(最多上傳3張照片)</LaunchPrompt>
+                      </LaunchBodyContent>
+                    </LaunchBody>
+                    {uploaded.first && (
+                      <PhotoContainer style={styling.photoContainerWidth()}>
+                        <Photo></Photo>
+                        <Photo></Photo>
+                        <Photo></Photo>
+                      </PhotoContainer>
+                    )}
+                    {isUploaded && (
+                      <ProductContainer
+                        onBlur={(e) => {
+                          validation(e);
+                        }}
+                      >
+                        <ProductDetailInput placeholder="商品名稱"></ProductDetailInput>
+                        <ProductDetailInput placeholder="設定價位"></ProductDetailInput>
+                        <ProductDescription>
+                          <textarea
+                            placeholder="商品敘述"
+                            style={{
+                              height: "194px",
+                              maxHeight: "768px",
+                              width: "100%",
+                              maxWidth: "100%",
+                              borderStyle: "none",
+                              outline: "none",
+                              padding: "0",
+                              margin: "0",
+                            }}
+                          ></textarea>
+                        </ProductDescription>
+                        <ProductDetailInput placeholder="商品細節"></ProductDetailInput>
+                        <LaunchButton
+                          style={{ marginLeft: "auto" }}
+                          onClick={() => {
+                            launchProduct(userToken);
+                          }}
+                        >
+                          立即刊登
+                        </LaunchButton>
+                      </ProductContainer>
+                    )}
                   </>
                 )}
-                {feature.unLaunch && (
+                {feature.myLaunch && (
                   <>
-                    <h1>unLaunch</h1>
+                    {secondHand.length > 0 ? (
+                      secondHand.map((item, index) => (
+                        <Item key={index}>
+                          <Shadow></Shadow>
+                          <ItemImg src={item.image}></ItemImg>
+                          <ItemBody>
+                            <ItemTitle>{item.title}</ItemTitle>
+                            <ItemPrice>$ {item.price}</ItemPrice>
+                            <ItemNote>id: {item.id}</ItemNote>
+                            <Trash
+                              onClick={() => {
+                                deleteUserSecondHand(item.id, userToken);
+                              }}
+                            ></Trash>
+                          </ItemBody>
+                        </Item>
+                      ))
+                    ) : (
+                      <EmptyPrompt>目前還沒有上架商品哦～</EmptyPrompt>
+                    )}
                   </>
                 )}
-              </BidBody>
+                {feature.bitWin && (
+                  <>
+                    {profile.complete.length > 0 ? (
+                      profile.complete.map((item, index) => (
+                        <Item key={index}>
+                          <Shadow></Shadow>
+                          <ItemImg src={item.picture}></ItemImg>
+                          <ItemBody>
+                            <ItemTitle>{item.title}</ItemTitle>
+                            <ItemPrice>$ {item.price}</ItemPrice>
+                            <ItemNote>
+                              結標日期{" "}
+                              {new Date(Date.parse(item.deadline)).getMonth() +
+                                1}
+                              /{new Date(Date.parse(item.deadline)).getDate()}{" "}
+                              {new Date(Date.parse(item.deadline)).getHours()}:
+                              {new Date(Date.parse(item.deadline)).getMinutes()}
+                              :
+                              {new Date(Date.parse(item.deadline)).getSeconds()}
+                            </ItemNote>
+                          </ItemBody>
+                        </Item>
+                      ))
+                    ) : (
+                      <EmptyPrompt>目前還沒有得標商品哦～</EmptyPrompt>
+                    )}
+                  </>
+                )}
+              </InfoBody>
             </InfoContainer>
           </UserProfileContainer>
         </UserProfile>
@@ -575,4 +977,3 @@ function Profile() {
 }
 
 export default Profile;
-
