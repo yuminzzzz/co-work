@@ -282,6 +282,7 @@ const BiddingProduct = () => {
       });
     });
     socketRef.current.on("success", (data) => {
+      setBidSuccessInfoTime(5);
       console.log(data);
       setBidSuccess(true);
       const coundDownTimer = setInterval(() => {
@@ -298,6 +299,7 @@ const BiddingProduct = () => {
     });
 
     socketRef.current.on("fail", (data) => {
+      setBidFailInfoTime(3);
       console.log(data);
       setBidInfo(data);
       setBidFail(true);
