@@ -729,13 +729,11 @@ function Profile() {
     }
   };
   const formData = new FormData();
-  console.log(launchProductList);
   for (let item in launchProductList) {
-    // console.log(item, launchProductList[item]);
     formData.append(item, launchProductList[item]);
   }
 
-  // console.log(launchProductList);
+
 
   const launchProduct = async (token) => {
     if (Object.values(launchProductList).some((item) => item === null)) return;
