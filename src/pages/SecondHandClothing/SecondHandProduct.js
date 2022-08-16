@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
+import io from "socket.io-client";
 
 import {
   Wrapper,
@@ -174,7 +175,6 @@ const SendMessageAll = (props) => {
 };
 
 const ReceiverMessageAll = (props) => {
-  console.log(props.allMessage);
   return (
     <ReceiveMessageWrapper>
       <ReceiveImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
@@ -188,8 +188,10 @@ const ReceiverMessageAll = (props) => {
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
   const { id } = useParams();
+  const socketRef = useRef();
+  const userToken = localStorage.getItem("userToken") || "";
 
-  const allMessage = [
+  const [allMessage, setAllMessage] = useState([
     { self: false, msg: "hello" },
     { self: true, msg: "hiiiiii" },
     { self: true, msg: "how are you" },
@@ -199,7 +201,31 @@ const SecondHandProduct = () => {
     { self: true, msg: "how are you" },
     { self: true, msg: "hiiiiii" },
     { self: true, msg: "how are you" },
-  ];
+  ]);
+
+  useEffect(() => {
+    socketRef.current = io.connect("https://claudia-teng.com/", {
+      transports: ["websocket", "polling", "flashsocket"],
+      auth: {
+        token: `Bearer ${userToken}`,
+      },
+    });
+    socketRef.current.on("private chat", (data) => {
+      console.log(data);
+      let newMessage = [...allMessage, data];
+      setAllMessage(newMessage);
+    });
+  }, []);
+
+  const sendMessageClick = (e) => {
+    const request = {
+      targetId: 1,
+      msg: e.target.value,
+    };
+    if (e.code === "Enter") {
+      socketRef.current.emit("private chat", request);
+    }
+  };
 
   useEffect(() => {
     async function getSecondHandProduct() {
@@ -279,7 +305,12 @@ const SecondHandProduct = () => {
           <ReceiverMessageAll /> */}
         </ChatroomDetailMain>
         <ChatroomDetailFooter>
-          <ChatroomInput placeholder="Type your message ..." />
+          <ChatroomInput
+            placeholder="Type your message ..."
+            onKeyPress={(e) => {
+              sendMessageClick(e);
+            }}
+          />
         </ChatroomDetailFooter>
       </ChatroomDetailWrapper>
     </Wrapper>
