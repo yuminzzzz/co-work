@@ -96,6 +96,11 @@ const BiddingButton = styled.div`
     background-color: #69523d;
     color: #fff;
   }
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: #e0e4e9;
+    color: #bdcbdc;
+  }
 `;
 
 const DetailTitle = styled.div`
@@ -133,6 +138,7 @@ const PopUpMessage = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 20px;
   @media screen and (max-width: 1279px) {
     top: 80vh;
   }
@@ -390,7 +396,7 @@ const BiddingProduct = () => {
             <>
               <PopUpMessage>
                 <PopUpImg src={popUpImages.fail} alt="Bid-fail" />
-                <PopUpText>{bidInfo}</PopUpText>
+                <PopUpText style={{ fontSize: "25px" }}>{bidInfo}</PopUpText>
                 <PopUpNote>
                   {bidInfo === "請先進行會員登入！"
                     ? `${bidFailInfoTime} 秒後前往會員專區 `
@@ -423,7 +429,7 @@ const BiddingProduct = () => {
           </PriceWrapper>
           <DetailWrap>
             <DetailTitle>數量</DetailTitle>
-            {auctionProduct.stock} 件
+            {!disabled ? `${auctionProduct.stock} 件` : `0 件`}
           </DetailWrap>
           <HighestPerson>
             <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
@@ -472,19 +478,23 @@ const BiddingProduct = () => {
             >
               我要出價
             </BiddingButton>
-            <BiddingButton
-              onClick={(e) => {
-                resetButton(e);
-              }}
-              style={{
-                flexBasis: "350px",
-                marginLeft: "0",
-                marginTop: "15px",
-                fontSize: "18px",
-              }}
-            >
-              出價歸零
-            </BiddingButton>
+            {!disabled ? (
+              <BiddingButton
+                onClick={(e) => {
+                  resetButton(e);
+                }}
+                style={{
+                  flexBasis: "350px",
+                  marginLeft: "0",
+                  marginTop: "15px",
+                  fontSize: "18px",
+                }}
+              >
+                出價歸零
+              </BiddingButton>
+            ) : (
+              ""
+            )}
           </UserBiddingPriceWrapper>
           <BiddingLastTimeDetail
             auctionProduct={auctionProduct}
