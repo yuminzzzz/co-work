@@ -274,6 +274,7 @@ const ItemImg = styled.img`
   width: 100%;
   height: 60%;
   border-radius: 6px;
+  object-fit: cover;
 `;
 
 const ItemBody = styled.div`
@@ -364,6 +365,7 @@ const Photo = styled.img`
   height: 100px;
   border-radius: 6px;
   border: dashed 2px salmon;
+  object-fit: cover;
 `;
 
 // product info
