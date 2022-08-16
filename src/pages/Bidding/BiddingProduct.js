@@ -251,10 +251,21 @@ const BiddingProduct = () => {
   const setPricetoServer = () => {
     if (!disabled) {
       if (!userToken) {
-        alert("請先進行會員登入 ... 點擊OK後，將跳轉至會員登入專區");
-        setTimeout(() => {
-          navigate("/profile");
-        }, 500);
+        setBidFailInfoTime(3);
+        setBidInfo("請先進行會員登入！");
+        setBidFail(true);
+        const coundDownTimer = setInterval(() => {
+          setBidFailInfoTime((prev) => {
+            if (prev <= 0) {
+              clearInterval(coundDownTimer);
+              setBidFail(false);
+              navigate("/profile");
+              return 0;
+            } else {
+              return prev - 1;
+            }
+          });
+        }, 1000);
       } else {
         const passMessage = {
           userId: userToken,
@@ -380,7 +391,11 @@ const BiddingProduct = () => {
               <PopUpMessage>
                 <PopUpImg src={popUpImages.fail} alt="Bid-fail" />
                 <PopUpText>{bidInfo}</PopUpText>
-                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+                <PopUpNote>
+                  {bidInfo === "請先進行會員登入！"
+                    ? `${bidFailInfoTime} 秒後前往會員專區 `
+                    : `${bidFailInfoTime} 秒後自動關閉 ...`}
+                </PopUpNote>
               </PopUpMessage>
               <BlackAllLayout />
             </>
