@@ -92,6 +92,9 @@ const FacebookLoginButton = styled.button`
   font-size: 21px;
   margin: 6px 0;
   cursor: pointer;
+  &:hover {
+    background-color: #4267b2;
+  }
 `;
 
 const RegisterButton = styled.button`
@@ -104,6 +107,10 @@ const RegisterButton = styled.button`
   border-radius: 6px;
   text-align: center;
   cursor: pointer;
+  background-color: #42b72a;
+  &:hover {
+    background-color: green;
+  }
 `;
 
 const ReturnLastPage = styled.div`
@@ -208,22 +215,17 @@ const InfoHeadButton = styled.button`
   font-size: 20px;
   width: 150px;
   line-height: 40px;
-  border: solid 1px black;
   cursor: pointer;
-  color: grey;
-  background-color: #f0f2f5;
-  color: #24292f;
+  background-color: ${(props) => (props.$isActive ? "salmon" : "#fff")};
+  color: ${(props) => (props.$isActive ? "#fff" : "black")};
   font-size: 16px;
   letter-spacing: 5px;
   border: solid 1px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  margin-bottom: -10px;
+  padding: 0;
+  padding-bottom: 5px;
   border-radius: 6px;
-  border-bottom: none;
-  ${
-    "" /* &:hover {
-    background-color: orange;
-    color: #ffffff;
-  } */
-  }
 `;
 
 const InfoBody = styled.div`
@@ -404,6 +406,7 @@ const ProductDescription = styled.div`
 `;
 
 function Profile() {
+  let navigate = useNavigate();
   const [profile, setProfile] = useState(
     JSON.parse(localStorage.getItem("userProfile")) || null
   );
@@ -418,11 +421,6 @@ function Profile() {
     name: "",
     account: "",
     password: "",
-  });
-  const [feature, setFeature] = useState({
-    launch: true,
-    myLaunch: null,
-    bitWin: null,
   });
   const [uploaded, setUploaded] = useState({
     first: "",
@@ -439,9 +437,11 @@ function Profile() {
     other_images_1: null,
     other_images_2: null,
   });
+  const [titleID, setTitleID] = useState(0);
+  const formData = new FormData();
   const styling = {
-    direction() {
-      if (feature.launch) {
+    flexDirection() {
+      if (titleID == 0) {
         return { flexDirection: "column" };
       } else {
         return { flexDirection: "row" };
@@ -461,9 +461,9 @@ function Profile() {
         return { width: "100%" };
       }
     },
+
     headButton: ["上架商品", "我的商品", "已得標"],
   };
-  let navigate = useNavigate();
   const validation = (e) => {
     if (e.target.placeholder === "請輸入名字") {
       if (e.target.value) {
@@ -676,59 +676,10 @@ function Profile() {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userSecondHand");
-    setFeature({
-      bitWin: true,
-      launch: null,
-      myLaunch: null,
-    });
     setUserToken([]);
     setProfile(null);
     setSecondHand([]);
   };
-  const featureSwitch = async (e) => {
-    if (e.target.innerText === "上架商品") {
-      e.target.style.backgroundColor = "salmon";
-      e.target.style.color = "#ffffff";
-      setFeature({
-        launch: true,
-        myLaunch: null,
-        bitWin: null,
-      });
-    } else if (e.target.innerText === "我的商品") {
-      e.target.style.backgroundColor = "salmon";
-      e.target.style.color = "#ffffff";
-      setFeature({
-        launch: null,
-        myLaunch: true,
-        bitWin: null,
-      });
-    } else if (e.target.innerText === "已得標") {
-      e.target.style.backgroundColor = "salmon";
-      e.target.style.color = "#ffffff";
-      await getUserProfile(userToken);
-      setFeature({
-        launch: null,
-        myLaunch: null,
-        bitWin: true,
-      });
-    }
-  };
-  const reverseFeatureSwitch = (e) => {
-    if (e.target.innerText === "已得標") {
-      e.target.style.backgroundColor = "#f0f2f5";
-      e.target.style.color = "black";
-    } else if (e.target.innerText === "上架商品") {
-      e.target.style.backgroundColor = "#f0f2f5";
-      e.target.style.color = "black";
-    } else if (e.target.innerText === "下架商品") {
-      e.target.style.backgroundColor = "#f0f2f5";
-      e.target.style.color = "black";
-    }
-  };
-  const formData = new FormData();
-  for (let item in launchProductList) {
-    formData.append(item, launchProductList[item]);
-  }
   const launchProduct = async (token) => {
     if (Object.values(launchProductList).some((item) => item === null)) return;
     await fetch(`https://claudia-teng.com/api/1.0/second-hand/user`, {
@@ -740,9 +691,9 @@ function Profile() {
     });
     await getUserSecondHand(token);
     setUploaded({
-      first: null,
-      second: null,
-      third: null,
+      first: "",
+      second: "",
+      third: "",
     });
     setIsUploaded(null);
     setLaunchProductList({
@@ -871,6 +822,12 @@ function Profile() {
       }
     }
   };
+  const titleHandler = (e) => {
+    setTitleID(e.target.id);
+  };
+  for (let item in launchProductList) {
+    formData.append(item, launchProductList[item]);
+  }
   useEffect(() => {
     setValid({
       name: "",
@@ -883,7 +840,7 @@ function Profile() {
       setIsUploaded(true);
     }
   }, [uploaded]);
-  console.log(valid, isRegisterPage, valid.account, valid.password);
+
   return (
     <Wrapper>
       {!profile ? (
@@ -923,7 +880,6 @@ function Profile() {
               <Divider></Divider>
               <RegisterButton
                 onClick={() => setIsRegisterPage(true)}
-                style={{ backgroundColor: "#42b72a" }}
               >
                 建立新帳號
               </RegisterButton>
@@ -975,19 +931,19 @@ function Profile() {
               <LogoutButton onClick={Logout}>登出</LogoutButton>
             </UserInfoContainer>
             <InfoContainer>
-              <InfoHead>
+              <InfoHead onClick={titleHandler}>
                 {styling.headButton.map((item, index) => (
                   <InfoHeadButton
-                    key={index}
-                    onClick={(e) => featureSwitch(e)}
-                    onBlur={(e) => reverseFeatureSwitch(e)}
+                    key={item}
+                    id={index}
+                    $isActive={titleID == index}
                   >
                     {item}
                   </InfoHeadButton>
                 ))}
               </InfoHead>
-              <InfoBody style={styling.direction()}>
-                {feature.launch && (
+              <InfoBody style={styling.flexDirection()}>
+                {titleID == 0 && (
                   <>
                     <LaunchBody style={styling.uploaded()}>
                       <LaunchBodyContent>
@@ -1064,7 +1020,7 @@ function Profile() {
                     )}
                   </>
                 )}
-                {feature.myLaunch && (
+                {titleID == 1 && (
                   <>
                     {secondHand.length > 0 ? (
                       secondHand.map((item, index) => (
@@ -1090,7 +1046,7 @@ function Profile() {
                     )}
                   </>
                 )}
-                {feature.bitWin && (
+                {titleID == 2 && (
                   <>
                     {profile.complete.length > 0 ? (
                       profile.complete.map((item, index) => (
