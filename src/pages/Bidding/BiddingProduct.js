@@ -177,12 +177,15 @@ const BiddingLastTimeDetail = (props) => {
       const interval = setInterval(() => {
         setCountDown(countDownDate - new Date().getTime());
       }, 1000);
-
       return () => clearInterval(interval);
     }, [countDownDate]);
-
+    // countDownDate 設為 useEffect 監聽的對象，是以防 countDownDate 是變動的狀態
+    // 在此專案中 countDownDate 為固定不動，所以 useEffect 不監聽東西也沒關係(因為useEffect裡和 countDownDate 相關)
+    // clearInterval => 1. 當 countDownDate 沒變動 不會用到 2. 為何要用 ? 當離開此頁面 若沒有 clear 他還是在背景執行
+    // 所以還是要寫 clearInterval 比較保險 => 離開頁面就停止 interval
     return getReturnValues(countDown);
   };
+
   const getReturnValues = (countDown) => {
     const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
