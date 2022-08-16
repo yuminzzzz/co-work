@@ -266,7 +266,20 @@ const BiddingProduct = () => {
         socketRef.current.emit("chat message", passMessage);
       }
     } else {
-      alert("此商品競標已結束！");
+      setBidFailInfoTime(3);
+      setBidInfo("此商品競標已結束！");
+      setBidFail(true);
+      const coundDownTimer = setInterval(() => {
+        setBidFailInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidFail(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
     }
   };
 
@@ -496,6 +509,13 @@ const BiddingProduct = () => {
             <Image src={image} key={index} />
           ))}
         </Images>
+        <Image
+          src={popUpImages.success}
+          key={2}
+          style={{ width: 0, height: 0 }}
+        />
+        <Image src={popUpImages.fail} key={3} style={{ width: 0, height: 0 }} />
+        <Image src={popUpImages.freq} key={4} style={{ width: 0, height: 0 }} />
       </Wrapper>
     </>
   );
