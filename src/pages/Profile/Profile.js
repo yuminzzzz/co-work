@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import api from "../../utils/api";
@@ -62,7 +63,6 @@ const Input = styled.input`
 `;
 
 const LoginButton = styled.button`
-  background-color: light-grey;
   width: 364px;
   height: 48px;
   border-style: none;
@@ -72,10 +72,6 @@ const LoginButton = styled.button`
   font-size: 21px;
   margin: 6px 0;
   cursor: pointer;
-  &:hover {
-    transition: all 0.2s ease-in;
-    background-color: #dfdfd;
-  }
 `;
 
 const Divider = styled.div`
@@ -102,7 +98,6 @@ const RegisterButton = styled.button`
   width: 122px;
   height: 48px;
   line-height: 48px;
-  background-color: #42b72a;
   border-style: none;
   color: #ffffff;
   padding: 0 16px;
@@ -468,6 +463,7 @@ function Profile() {
     },
     headButton: ["上架商品", "我的商品", "已得標"],
   };
+  let navigate = useNavigate();
   const validation = (e) => {
     if (e.target.placeholder === "請輸入名字") {
       if (e.target.value) {
@@ -709,6 +705,7 @@ function Profile() {
     } else if (e.target.innerText === "已得標") {
       e.target.style.backgroundColor = "salmon";
       e.target.style.color = "#ffffff";
+      await getUserProfile(userToken);
       setFeature({
         launch: null,
         myLaunch: null,
@@ -732,9 +729,6 @@ function Profile() {
   for (let item in launchProductList) {
     formData.append(item, launchProductList[item]);
   }
-
-
-
   const launchProduct = async (token) => {
     if (Object.values(launchProductList).some((item) => item === null)) return;
     await fetch(`https://claudia-teng.com/api/1.0/second-hand/user`, {
@@ -744,6 +738,7 @@ function Profile() {
       }),
       body: formData,
     });
+    await getUserSecondHand(token);
     setUploaded({
       first: null,
       second: null,
@@ -888,6 +883,7 @@ function Profile() {
       setIsUploaded(true);
     }
   }, [uploaded]);
+  console.log(valid, isRegisterPage, valid.account, valid.password);
   return (
     <Wrapper>
       {!profile ? (
@@ -911,12 +907,24 @@ function Profile() {
                   ></Input>
                 </InputContainer>
               </InputSection>
-              <LoginButton onClick={login}>登入</LoginButton>
+              <LoginButton
+                onClick={login}
+                style={
+                  valid.account && valid.password
+                    ? { backgroundColor: "#d3d3d3" }
+                    : { backgroundColor: "light-grey" }
+                }
+              >
+                登入
+              </LoginButton>
               <FacebookLoginButton onClick={fbLogin}>
                 以facebook登入
               </FacebookLoginButton>
               <Divider></Divider>
-              <RegisterButton onClick={() => setIsRegisterPage(true)}>
+              <RegisterButton
+                onClick={() => setIsRegisterPage(true)}
+                style={{ backgroundColor: "#42b72a" }}
+              >
                 建立新帳號
               </RegisterButton>
             </>
@@ -945,7 +953,16 @@ function Profile() {
                   ></Input>
                 </InputContainer>
               </InputSection>
-              <LoginButton onClick={register}>註冊</LoginButton>
+              <LoginButton
+                onClick={register}
+                style={
+                  valid.name && valid.account && valid.password
+                    ? { backgroundColor: "#d3d3d3" }
+                    : { backgroundColor: "light-grey" }
+                }
+              >
+                註冊
+              </LoginButton>
             </>
           )}
         </LoginContainer>
@@ -1052,7 +1069,9 @@ function Profile() {
                     {secondHand.length > 0 ? (
                       secondHand.map((item, index) => (
                         <Item key={index}>
-                          <Shadow></Shadow>
+                          <Shadow
+                            onClick={() => navigate(`/secondhand/${item.id}`)}
+                          ></Shadow>
                           <ItemImg src={item.image}></ItemImg>
                           <ItemBody>
                             <ItemTitle>{item.title}</ItemTitle>
