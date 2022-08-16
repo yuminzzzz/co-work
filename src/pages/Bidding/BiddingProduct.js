@@ -264,7 +264,6 @@ const BiddingProduct = () => {
         };
         setPlusPrice(0);
         socketRef.current.emit("chat message", passMessage);
-        console.log(passMessage);
       }
     } else {
       alert("此商品競標已結束！");
@@ -277,7 +276,6 @@ const BiddingProduct = () => {
     });
     socketRef.current.emit("joinRoom", { room: id });
     socketRef.current.on("chat message", (data) => {
-      console.log(data);
       setProductInfo({
         currentUser: data.currentUserName,
         currentPrice: data.currentPrice,
@@ -286,7 +284,6 @@ const BiddingProduct = () => {
     });
     socketRef.current.on("success", (data) => {
       setBidSuccessInfoTime(5);
-      console.log(data);
       setBidSuccess(true);
       const coundDownTimer = setInterval(() => {
         setBidSuccessInfoTime((prev) => {
@@ -303,7 +300,6 @@ const BiddingProduct = () => {
 
     socketRef.current.on("fail", (data) => {
       setBidFailInfoTime(3);
-      console.log(data);
       setBidInfo(data);
       setBidFail(true);
       const coundDownTimer = setInterval(() => {
@@ -329,7 +325,6 @@ const BiddingProduct = () => {
         currentPrice: data.currentPrice,
         currentBidCount: data.count,
       });
-      console.log(data);
     }
     getAuctionProduct();
   }, [id]);
@@ -337,7 +332,6 @@ const BiddingProduct = () => {
   if (!auctionProduct) {
     return null;
   }
-  console.log(bidSuccess);
   return (
     <>
       <Wrapper>
