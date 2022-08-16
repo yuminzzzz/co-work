@@ -96,6 +96,11 @@ const BiddingButton = styled.div`
     background-color: #69523d;
     color: #fff;
   }
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: #e0e4e9;
+    color: #bdcbdc;
+  }
 `;
 
 const DetailTitle = styled.div`
@@ -133,6 +138,10 @@ const PopUpMessage = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 20px;
+  @media screen and (max-width: 1279px) {
+    top: 80vh;
+  }
 `;
 
 const PopUpImg = styled.img`
@@ -248,10 +257,21 @@ const BiddingProduct = () => {
   const setPricetoServer = () => {
     if (!disabled) {
       if (!userToken) {
-        alert("請先進行會員登入 ... 點擊OK後，將跳轉至會員登入專區");
-        setTimeout(() => {
-          navigate("/profile");
-        }, 500);
+        setBidFailInfoTime(3);
+        setBidInfo("請先進行會員登入！");
+        setBidFail(true);
+        const coundDownTimer = setInterval(() => {
+          setBidFailInfoTime((prev) => {
+            if (prev <= 0) {
+              clearInterval(coundDownTimer);
+              setBidFail(false);
+              navigate("/profile");
+              return 0;
+            } else {
+              return prev - 1;
+            }
+          });
+        }, 1000);
       } else {
         const passMessage = {
           userId: userToken,
@@ -261,10 +281,22 @@ const BiddingProduct = () => {
         };
         setPlusPrice(0);
         socketRef.current.emit("chat message", passMessage);
-        console.log(passMessage);
       }
     } else {
-      alert("此商品競標已結束！");
+      setBidFailInfoTime(3);
+      setBidInfo("此商品競標已結束！");
+      setBidFail(true);
+      const coundDownTimer = setInterval(() => {
+        setBidFailInfoTime((prev) => {
+          if (prev <= 0) {
+            clearInterval(coundDownTimer);
+            setBidFail(false);
+            return 0;
+          } else {
+            return prev - 1;
+          }
+        });
+      }, 1000);
     }
   };
 
@@ -274,7 +306,6 @@ const BiddingProduct = () => {
     });
     socketRef.current.emit("joinRoom", { room: id });
     socketRef.current.on("chat message", (data) => {
-      console.log(data);
       setProductInfo({
         currentUser: data.currentUserName,
         currentPrice: data.currentPrice,
@@ -283,7 +314,6 @@ const BiddingProduct = () => {
     });
     socketRef.current.on("success", (data) => {
       setBidSuccessInfoTime(5);
-      console.log(data);
       setBidSuccess(true);
       const coundDownTimer = setInterval(() => {
         setBidSuccessInfoTime((prev) => {
@@ -300,7 +330,6 @@ const BiddingProduct = () => {
 
     socketRef.current.on("fail", (data) => {
       setBidFailInfoTime(3);
-      console.log(data);
       setBidInfo(data);
       setBidFail(true);
       const coundDownTimer = setInterval(() => {
@@ -326,7 +355,6 @@ const BiddingProduct = () => {
         currentPrice: data.currentPrice,
         currentBidCount: data.count,
       });
-      console.log(data);
     }
     getAuctionProduct();
   }, [id]);
@@ -334,11 +362,14 @@ const BiddingProduct = () => {
   if (!auctionProduct) {
     return null;
   }
-  console.log(bidSuccess);
   return (
     <>
       <Wrapper>
-        {bidSuccess ? <Confetti style={{ width: "100%" }} /> : ""}
+        {bidSuccess ? (
+          <Confetti style={{ width: "100%", height: "100%" }} />
+        ) : (
+          ""
+        )}
         {bidSuccess ? (
           <>
             <PopUpMessage>
@@ -365,8 +396,12 @@ const BiddingProduct = () => {
             <>
               <PopUpMessage>
                 <PopUpImg src={popUpImages.fail} alt="Bid-fail" />
-                <PopUpText>{bidInfo}</PopUpText>
-                <PopUpNote>{bidFailInfoTime} 秒後自動關閉 ...</PopUpNote>
+                <PopUpText style={{ fontSize: "25px" }}>{bidInfo}</PopUpText>
+                <PopUpNote>
+                  {bidInfo === "請先進行會員登入！"
+                    ? `${bidFailInfoTime} 秒後前往會員專區 `
+                    : `${bidFailInfoTime} 秒後自動關閉 ...`}
+                </PopUpNote>
               </PopUpMessage>
               <BlackAllLayout />
             </>
@@ -394,7 +429,7 @@ const BiddingProduct = () => {
           </PriceWrapper>
           <DetailWrap>
             <DetailTitle>數量</DetailTitle>
-            {auctionProduct.stock} 件
+            {!disabled ? `${auctionProduct.stock} 件` : `0 件`}
           </DetailWrap>
           <HighestPerson>
             <DetailTitle>{!disabled ? "最高出價者" : "商品得標者"}</DetailTitle>
@@ -443,19 +478,23 @@ const BiddingProduct = () => {
             >
               我要出價
             </BiddingButton>
-            <BiddingButton
-              onClick={(e) => {
-                resetButton(e);
-              }}
-              style={{
-                flexBasis: "350px",
-                marginLeft: "0",
-                marginTop: "15px",
-                fontSize: "18px",
-              }}
-            >
-              出價歸零
-            </BiddingButton>
+            {!disabled ? (
+              <BiddingButton
+                onClick={(e) => {
+                  resetButton(e);
+                }}
+                style={{
+                  flexBasis: "350px",
+                  marginLeft: "0",
+                  marginTop: "15px",
+                  fontSize: "18px",
+                }}
+              >
+                出價歸零
+              </BiddingButton>
+            ) : (
+              ""
+            )}
           </UserBiddingPriceWrapper>
           <BiddingLastTimeDetail
             auctionProduct={auctionProduct}
@@ -495,6 +534,13 @@ const BiddingProduct = () => {
             <Image src={image} key={index} />
           ))}
         </Images>
+        <Image
+          src={popUpImages.success}
+          key={2}
+          style={{ width: 0, height: 0 }}
+        />
+        <Image src={popUpImages.fail} key={3} style={{ width: 0, height: 0 }} />
+        <Image src={popUpImages.freq} key={4} style={{ width: 0, height: 0 }} />
       </Wrapper>
     </>
   );
