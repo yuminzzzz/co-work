@@ -245,7 +245,7 @@ const categories = [
   },
   {
     name: "secondhandclothing",
-    displayText: "二手衣專區",
+    displayText: "二手服飾專區",
   },
 ];
 
