@@ -264,10 +264,10 @@ function Header() {
     if (category) setInputValue("");
   }, [category]);
 
-  useEffect(() => {
-    setUserToken(localStorage.getItem("userToken"));
-    cart.getUserCartItem(userToken);
-  }, [cart.cartItems]);
+  // useEffect(() => {
+  //   setUserToken(localStorage.getItem("userToken"));
+  //   cart.getUserCartItem(userToken);
+  // }, [cart.cartItems]);
 
   if (cart.cartItems) {
     return (

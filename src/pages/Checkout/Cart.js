@@ -235,7 +235,7 @@ function Cart() {
           <Empty />
         </Header>
         <Items>
-          {items.map((item, index) => (
+          {/* {items.map((item, index) => (
             <Item key={`${item.id}-${item.color.code}-${item.size}`}>
               <ItemImage src={item.image} />
               <ItemDetails>
@@ -278,7 +278,7 @@ function Cart() {
               </ItemPrice>
               <DeleteButton onClick={() => cart.deleteItem(index)} />
             </Item>
-          ))}
+          ))} */}
         </Items>
       </>
     );

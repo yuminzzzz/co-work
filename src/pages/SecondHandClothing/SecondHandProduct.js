@@ -3,14 +3,6 @@ import { useEffect, useState, useRef, useContext } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComments } from "@fortawesome/free-solid-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { faPersonSkiing } from "@fortawesome/free-solid-svg-icons";
-import { faMessage } from "@fortawesome/free-regular-svg-icons";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { AddToCart } from "../Product/ProductVariants";
 import {
   PriceWrapper,
@@ -32,6 +24,16 @@ import {
   Image,
 } from "../Product/Product";
 import CartContext from "../../contexts/CartContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPersonSkiing } from "@fortawesome/free-solid-svg-icons";
+import { faMessage } from "@fortawesome/free-regular-svg-icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faAnglesLeft } from "@fortawesome/free-solid-svg-icons";
 
 //chatmainpage
 
@@ -75,7 +77,7 @@ const ChatContainer = styled.div`
   }
 `;
 
-const ReturnLastPage = styled.button`
+const CloseChatroom = styled.button`
   position: absolute;
   right: 0;
   width: 40px;
@@ -124,7 +126,8 @@ const ChatItem = styled.div`
 `;
 
 const UserAvatar = styled.img`
-  border: solid 1px black;
+  border: solid 1px light-grey;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0.1px 0.1px 0;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -166,7 +169,7 @@ const ChatroomDetailWrapper = styled.div`
   position: fixed;
   bottom: 15px;
   z-index: 999;
-  right: 15px;
+  right: 18px;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
@@ -246,6 +249,15 @@ const ReceiveImage = styled(UserImage)`
   left: 10px;
 `;
 
+const ReturnChatroom = styled.div`
+  font-size: 18px;
+  position: absolute;
+  top: 24px;
+  left: 12px;
+  cursor: pointer;
+  z-index: 999;
+`;
+
 const ChatroomDetailHeader = styled.div`
   width: 100%;
   height: 70px;
@@ -280,6 +292,9 @@ const SubmitButton = styled.button`
   text-align: center;
   line-height: 45px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ChatroomInput = styled.input`
@@ -366,18 +381,19 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
-  const name = [
-    "William Wright",
-    "Ollie Chandler",
-    "Elise Dennis",
-    "Warren White",
-    "Mila White",
-    "Damian Biander",
-  ];
+  const name = JSON.parse(localStorage.getItem("userList")) || [];
+
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
+  const [chatpageSwitch, setChatpageSwitch] = useState(false);
+
+  const [chatUserName, setChatUserName] = useState();
+
+  // const [chatUserAvatar, setChatUserAvatar] = useState(
+  //   secondHandProduct.sellerImage || ""
+  // );
 
   const sendMessageClick = (e) => {
     const request = {
@@ -387,14 +403,20 @@ const SecondHandProduct = () => {
     e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
-  };
-  useEffect(() => {
-    async function getSecondHandProduct() {
-      const data = await api.getSecondHandProduct(id);
-      setSecondHandProduct(data);
+    if (allMessage.length < 1) {
+      let userList = {
+        name: secondHandProduct.seller,
+        avatar: secondHandProduct.sellerImage,
+      };
+      if (!localStorage.getItem("userList")) {
+        localStorage.setItem("userList", JSON.stringify([userList]));
+      } else {
+        let arr = JSON.parse(localStorage.getItem("userList"));
+        arr.push(userList);
+        localStorage.setItem("userList", JSON.stringify(arr));
+      }
     }
-    getSecondHandProduct();
-  }, [id]);
+  };
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -404,7 +426,6 @@ const SecondHandProduct = () => {
       },
     });
   }, []);
-
   if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
       let newMessage = [...allMessage, data];
@@ -412,7 +433,6 @@ const SecondHandProduct = () => {
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
-
   useEffect(() => {
     if (chatroom.current) {
       chatroom.current.scrollTop = chatroomScrollHeight;
@@ -420,7 +440,11 @@ const SecondHandProduct = () => {
   }, [chatroomScrollHeight]);
 
   useEffect(() => {
-    cart.getUserCartItem(userToken);
+    async function getSecondHandProduct() {
+      const data = await api.getSecondHandProduct(id);
+      setSecondHandProduct(data);
+    }
+    getSecondHandProduct();
   }, [id]);
 
   if (!secondHandProduct) {
@@ -455,14 +479,17 @@ const SecondHandProduct = () => {
           {secondHandProduct.seller}
         </DetailWrap>
         <CartButtonWrap>
-          <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
           <AddToCart
-            onClick={() => cart.addToCart(secondHandProduct, userToken)}
+            style={{ marginRight: "10px" }}
+            onClick={() => {
+              setChatpageSwitch(true);
+              setChatUserName(secondHandProduct.seller);
+            }}
           >
-            加入購物車
+            聊聊詢問
           </AddToCart>
+          <AddToCart>加入購物車</AddToCart>
         </CartButtonWrap>
-
         <DetailWrap
           style={{
             display: "block",
@@ -487,45 +514,71 @@ const SecondHandProduct = () => {
         ))}
       </Images>
       {/* chatpage */}
-      <ChatroomDetailWrapper>
-        <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
-        {/* user name */}
-        <ChatroomDetailMain ref={chatroom}>
-          {allMessage.map((message, index) => {
-            // user index => state
-            return message.self ? (
-              <SendMessageAll allMessage={allMessage[index]} />
-            ) : (
-              <ReceiverMessageAll allMessage={allMessage[index]} />
-            );
-          })}
-        </ChatroomDetailMain>
-        <ChatroomDetailFooter onSubmit={(e) => sendMessageClick(e)}>
-          <ChatroomInput
-            placeholder="Type your message ..."
-            onChange={(e) => setMsg(e.target.value)}
-            value={msg || ""}
-          />
-          <SubmitButton id="submit">{"<<"}</SubmitButton>
-        </ChatroomDetailFooter>
-      </ChatroomDetailWrapper>
+      {chatpageSwitch && (
+        <ChatroomDetailWrapper>
+          <ReturnChatroom
+            onClick={() => {
+              setChatpageSwitch(false);
+              setChatSwitch(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faAnglesLeft} />
+          </ReturnChatroom>
+          <ChatroomDetailHeader>{chatUserName}</ChatroomDetailHeader>
+          {/* user name */}
+          <ChatroomDetailMain ref={chatroom}>
+            {allMessage.map((message, index) => {
+              // user index => state
+              return message.self ? (
+                <SendMessageAll allMessage={allMessage[index]} />
+              ) : (
+                <ReceiverMessageAll allMessage={allMessage[index]} />
+              );
+            })}
+          </ChatroomDetailMain>
+          <ChatroomDetailFooter onSubmit={(e) => sendMessageClick(e)}>
+            <ChatroomInput
+              placeholder="Type your message ..."
+              onChange={(e) => setMsg(e.target.value)}
+              value={msg || ""}
+            />
+            <SubmitButton id="submit">
+              {<FontAwesomeIcon icon={faPaperPlane} />}
+            </SubmitButton>
+          </ChatroomDetailFooter>
+        </ChatroomDetailWrapper>
+      )}
 
       {/* chatmainpage */}
-      <ChatIcon onClick={() => setChatSwitch(true)}>
+      <ChatIcon
+        onClick={() => setChatSwitch(true)}
+        style={
+          chatSwitch || chatpageSwitch
+            ? { display: "none" }
+            : { display: "flex" }
+        }
+      >
         <FontAwesomeIcon icon={faComments} />
       </ChatIcon>
       <ChatContainer
         style={chatSwitch ? { display: "block" } : { display: "none" }}
       >
-        <ReturnLastPage onClick={() => setChatSwitch(false)}>
+        <CloseChatroom onClick={() => setChatSwitch(false)}>
           <FontAwesomeIcon icon={faXmark} />
-        </ReturnLastPage>
+        </CloseChatroom>
         <ChatHeader>聊天</ChatHeader>
         <ChatBody>
           {name.map((item, index) => (
-            <ChatItem key={index}>
-              <UserAvatar></UserAvatar>
-              <UserName>{item}</UserName>
+            <ChatItem
+              key={index}
+              onClick={(e) => {
+                setChatpageSwitch(true);
+                setChatSwitch(false);
+                setChatUserName(item.name);
+              }}
+            >
+              <UserAvatar src={item.avatar}></UserAvatar>
+              <UserName>{item.name}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
             </ChatItem>
           ))}
@@ -538,7 +591,7 @@ const SecondHandProduct = () => {
           }}
         >
           {icon.map((item, index) => (
-            <FooterIcon $isActive={titleID == index}>
+            <FooterIcon $isActive={titleID == index} key={index}>
               <FontAwesomeIcon
                 icon={item}
                 key={index}
