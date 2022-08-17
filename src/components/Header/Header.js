@@ -256,22 +256,20 @@ function Header() {
   const category = searchParams.get("category");
   const location = useLocation();
   const secondHandCategory = location.pathname.split("/")[1];
-  const { getItems } = useContext(CartContext);
-  const [items, setItems] = useState();
-  const userToken = localStorage.getItem("userToken") || "";
-
+  const cart = useContext(CartContext);
+  const [userToken, setUserToken] = useState(
+    localStorage.getItem("userToken") || ""
+  );
   useEffect(() => {
     if (category) setInputValue("");
   }, [category]);
 
   useEffect(() => {
-    async function getUserCartItem(userToken) {
-      const data = await api.getUserCartItem(userToken);
-      setItems(data);
-    }
-    getUserCartItem(userToken);
-  }, []);
-  if (items) {
+    setUserToken(localStorage.getItem("userToken"));
+    cart.getUserCartItem(userToken);
+  }, [cart.cartItems]);
+
+  if (cart.cartItems) {
     return (
       <Wrapper>
         <Logo to="/" />
@@ -309,9 +307,7 @@ function Header() {
         <PageLinks>
           <PageLink to="/checkout">
             <PageLinkCartIcon icon={cart}>
-              <PageLinkIconNumber>
-                {getItems().length || items.length}
-              </PageLinkIconNumber>
+              <PageLinkIconNumber>{cart.cartItems.length}</PageLinkIconNumber>
             </PageLinkCartIcon>
             <PageLinkText>購物車</PageLinkText>
           </PageLink>

@@ -9,6 +9,7 @@ import PingFangTCRegular from "./fonts/PingFang-TC-Regular-2.otf";
 import PingFangTCThin from "./fonts/PingFang-TC-Thin-2.otf";
 import NotoSansTCRegular from "./fonts/NotoSansTC-Regular.otf";
 import NotoSansTCBold from "./fonts/NotoSansTC-Bold.otf";
+import api from "./utils/api";
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
@@ -70,10 +71,40 @@ function App() {
     return cartItems;
   }
 
+  async function getUserCartItem(userToken) {
+    const data = await api.getUserCartItem(userToken);
+    setCartItems(data);
+    return cartItems;
+  }
+
   function addItem(item) {
     const newCartItems = [...cartItems, item];
     setCartItems(newCartItems);
     window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+    window.alert("已加入商品");
+  }
+
+  async function addToCart(product, token) {
+    const item = {
+      color: { code: "334455", name: "深藍" },
+      id: product.id,
+      isStylish: false,
+      image: product.main_image,
+      name: product.title,
+      price: product.price,
+      qty: 1,
+      size: "S",
+      stock: 1,
+      seller: product.seller,
+    };
+    if (!token) {
+      const newCartItems = [...cartItems, item];
+      setCartItems(newCartItems);
+      window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+    } else {
+      await api.addNewItemsInCart(item, token);
+      await getUserCartItem(token);
+    }
     window.alert("已加入商品");
   }
 
@@ -110,6 +141,9 @@ function App() {
     changeItemQuantity,
     deleteItem,
     clearItems,
+    addToCart,
+    getUserCartItem,
+    cartItems,
   };
 
   return (

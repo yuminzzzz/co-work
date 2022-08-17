@@ -118,7 +118,7 @@ function Carousel() {
       product_id: 5,
       picture: "https://i.imgur.com/YOoIw0U.png",
       story:
-        "卡比之星\r\n八月份競標主題\r\n把所有不喜歡的東西都吃吃吃掉！\r\n卡比《yumyumyum》",
+        "卡比之星\r\n八月份競標主題\r\n把所有不喜歡的東西都吃吃吃掉！\r\n卡比《ho huiiiiii》",
     },
   ];
   const [activeCampaignIndex, setActiveCampaignIndex] = useState(0);
@@ -133,6 +133,7 @@ function Carousel() {
       }, 3000);
     }
     getCampaigns();
+    return () => clearInterval(intervalRef.current);
   }, []);
 
   return (

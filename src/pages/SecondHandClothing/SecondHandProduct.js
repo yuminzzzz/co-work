@@ -420,35 +420,11 @@ const SecondHandProduct = () => {
   }, [chatroomScrollHeight]);
 
   useEffect(() => {
-    async function getSecondHandProduct() {
-      const data = await api.getSecondHandProduct(id);
-      setSecondHandProduct(data);
-    }
-    getSecondHandProduct();
+    cart.getUserCartItem(userToken);
   }, [id]);
 
   if (!secondHandProduct) {
     return null;
-  }
-
-  async function addToCart(product, token) {
-    const item = {
-      color: { code: "334455", name: "深藍" },
-      id: product.id,
-      isStylish: false,
-      image: product.main_image,
-      name: product.title,
-      price: product.price,
-      qty: 1,
-      size: "S",
-      stock: 1,
-      seller: product.seller,
-    };
-    if (!token) {
-      cart.addItem(item);
-    } else {
-      await api.addNewItemsInCart(item, token);
-    }
   }
 
   return (
@@ -480,7 +456,9 @@ const SecondHandProduct = () => {
         </DetailWrap>
         <CartButtonWrap>
           <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
-          <AddToCart onClick={() => addToCart(secondHandProduct, userToken)}>
+          <AddToCart
+            onClick={() => cart.addToCart(secondHandProduct, userToken)}
+          >
             加入購物車
           </AddToCart>
         </CartButtonWrap>
