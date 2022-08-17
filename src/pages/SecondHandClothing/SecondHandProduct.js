@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
@@ -31,6 +31,7 @@ import {
   Images,
   Image,
 } from "../Product/Product";
+import CartContext from "../../contexts/CartContext";
 
 //chatmainpage
 
@@ -373,6 +374,9 @@ const SecondHandProduct = () => {
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
+  const cart = useContext(CartContext);
+
+  console.log(secondHandProduct);
 
   const sendMessageClick = (e) => {
     const request = {
@@ -390,7 +394,6 @@ const SecondHandProduct = () => {
     }
     getSecondHandProduct();
   }, [id]);
-
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -415,7 +418,6 @@ const SecondHandProduct = () => {
     }
   }, [chatroomScrollHeight]);
 
-
   useEffect(() => {
     async function getSecondHandProduct() {
       const data = await api.getSecondHandProduct(id);
@@ -427,6 +429,23 @@ const SecondHandProduct = () => {
   if (!secondHandProduct) {
     return null;
   }
+
+  function addToCart(product) {
+    cart.addItem({
+      color: { code: "334455", name: "深藍" },
+      id: product.id,
+      isStylish: false,
+      image: product.main_image,
+      name: product.title,
+      price: product.price,
+      qty: 1,
+      size: "S",
+      stock: 1,
+      seller: product.seller,
+    });
+    console.log(product);
+  }
+
   return (
     <Wrapper>
       <MainImage src={secondHandProduct.main_image} />
@@ -456,7 +475,9 @@ const SecondHandProduct = () => {
         </DetailWrap>
         <CartButtonWrap>
           <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
-          <AddToCart>加入購物車</AddToCart>
+          <AddToCart onClick={() => addToCart(secondHandProduct)}>
+            加入購物車
+          </AddToCart>
         </CartButtonWrap>
 
         <DetailWrap

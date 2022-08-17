@@ -79,10 +79,6 @@ const ProductCard = styled(Link)`
   &:nth-child(3n) {
     margin-right: 0;
   }
-  &:last-child {
-    margin-right: auto;
-    margin-left: 40px;
-  }
   @media screen and (max-width: 1279px) {
     &:last-child {
       margin-left: 0;

@@ -230,9 +230,17 @@ function Cart() {
             <ItemDetails>
               <ItemName>{item.name}</ItemName>
               <ItemID>{item.id}</ItemID>
-              {/* {item.isStylish?} */}
-              <ItemColorName>顏色｜{item.color.name}</ItemColorName>
-              <ItemSize>尺寸｜{item.size}</ItemSize>
+              {item.isStylish ? (
+                <>
+                  <ItemColorName>顏色｜{item.color.name}</ItemColorName>
+                  <ItemSize>尺寸｜{item.size}</ItemSize>
+                </>
+              ) : (
+                <>
+                  <ItemColorName>賣家｜{item.seller}</ItemColorName>
+                  <ItemSize>類別｜二手商品</ItemSize>
+                </>
+              )}
             </ItemDetails>
             <ItemQuantity>
               <ItemQuantityName hideOnDesktop>數量</ItemQuantityName>
