@@ -426,7 +426,6 @@ const SecondHandProduct = () => {
       },
     });
   }, []);
-  console.log(chatUserName);
   if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
       let newMessage = [...allMessage, data];
@@ -441,7 +440,11 @@ const SecondHandProduct = () => {
   }, [chatroomScrollHeight]);
 
   useEffect(() => {
-    cart.getUserCartItem(userToken);
+    async function getSecondHandProduct() {
+      const data = await api.getSecondHandProduct(id);
+      setSecondHandProduct(data);
+    }
+    getSecondHandProduct();
   }, [id]);
 
   if (!secondHandProduct) {
@@ -571,7 +574,7 @@ const SecondHandProduct = () => {
               onClick={(e) => {
                 setChatpageSwitch(true);
                 setChatSwitch(false);
-                setChatUserName(item.name)
+                setChatUserName(item.name);
               }}
             >
               <UserAvatar src={item.avatar}></UserAvatar>

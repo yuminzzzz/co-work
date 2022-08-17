@@ -73,8 +73,8 @@ function App() {
 
   async function getUserCartItem(userToken) {
     const data = await api.getUserCartItem(userToken);
-    setCartItems(data);
-    return cartItems;
+    // setCartItems(data);
+    return data;
   }
 
   function addItem(item) {

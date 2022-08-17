@@ -338,11 +338,11 @@ function Checkout() {
     getUserCartItem(userToken);
   }, []);
   let subtotal;
-  if (userItems) {
-    subtotal =
-      items.reduce((prev, item) => prev + item.price * item.qty, 0) ||
-      userItems.reduce((prev, item) => prev + item.price * item.qty, 0);
-  }
+  // if (userItems) {
+  //   subtotal =
+  //     items.reduce((prev, item) => prev + item.price * item.qty, 0) ||
+  //     userItems.reduce((prev, item) => prev + item.price * item.qty, 0);
+  // }
 
   const freight = 30;
 
