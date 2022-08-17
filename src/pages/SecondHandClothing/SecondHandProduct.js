@@ -126,7 +126,8 @@ const ChatItem = styled.div`
 `;
 
 const UserAvatar = styled.img`
-  border: solid 1px black;
+  border: solid 1px light-grey;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0.1px 0.1px 0;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -380,19 +381,19 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
-  const name = [
-    "William Wright",
-    "Ollie Chandler",
-    "Elise Dennis",
-    "Warren White",
-    "Mila White",
-    "Damian Biander",
-  ];
+  const name = JSON.parse(localStorage.getItem("userList")) || [];
+
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
   const [chatpageSwitch, setChatpageSwitch] = useState(false);
+
+  const [chatUserName, setChatUserName] = useState();
+
+  // const [chatUserAvatar, setChatUserAvatar] = useState(
+  //   secondHandProduct.sellerImage || ""
+  // );
 
   const sendMessageClick = (e) => {
     const request = {
@@ -402,14 +403,20 @@ const SecondHandProduct = () => {
     e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
-  };
-  useEffect(() => {
-    async function getSecondHandProduct() {
-      const data = await api.getSecondHandProduct(id);
-      setSecondHandProduct(data);
+    if (allMessage.length < 1) {
+      let userList = {
+        name: secondHandProduct.seller,
+        avatar: secondHandProduct.sellerImage,
+      };
+      if (!localStorage.getItem("userList")) {
+        localStorage.setItem("userList", JSON.stringify([userList]));
+      } else {
+        let arr = JSON.parse(localStorage.getItem("userList"));
+        arr.push(userList);
+        localStorage.setItem("userList", JSON.stringify(arr));
+      }
     }
-    getSecondHandProduct();
-  }, [id]);
+  };
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -419,7 +426,7 @@ const SecondHandProduct = () => {
       },
     });
   }, []);
-
+  console.log(chatUserName);
   if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
       let newMessage = [...allMessage, data];
@@ -427,7 +434,6 @@ const SecondHandProduct = () => {
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
-
   useEffect(() => {
     if (chatroom.current) {
       chatroom.current.scrollTop = chatroomScrollHeight;
@@ -470,14 +476,17 @@ const SecondHandProduct = () => {
           {secondHandProduct.seller}
         </DetailWrap>
         <CartButtonWrap>
-          <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
           <AddToCart
-            onClick={() => cart.addToCart(secondHandProduct, userToken)}
+            style={{ marginRight: "10px" }}
+            onClick={() => {
+              setChatpageSwitch(true);
+              setChatUserName(secondHandProduct.seller);
+            }}
           >
-            加入購物車
+            聊聊詢問
           </AddToCart>
+          <AddToCart>加入購物車</AddToCart>
         </CartButtonWrap>
-
         <DetailWrap
           style={{
             display: "block",
@@ -512,7 +521,7 @@ const SecondHandProduct = () => {
           >
             <FontAwesomeIcon icon={faAnglesLeft} />
           </ReturnChatroom>
-          <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
+          <ChatroomDetailHeader>{chatUserName}</ChatroomDetailHeader>
           {/* user name */}
           <ChatroomDetailMain ref={chatroom}>
             {allMessage.map((message, index) => {
@@ -559,13 +568,14 @@ const SecondHandProduct = () => {
           {name.map((item, index) => (
             <ChatItem
               key={index}
-              onClick={() => {
+              onClick={(e) => {
                 setChatpageSwitch(true);
                 setChatSwitch(false);
+                setChatUserName(item.name)
               }}
             >
-              <UserAvatar></UserAvatar>
-              <UserName>{item}</UserName>
+              <UserAvatar src={item.avatar}></UserAvatar>
+              <UserName>{item.name}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
             </ChatItem>
           ))}
@@ -578,7 +588,7 @@ const SecondHandProduct = () => {
           }}
         >
           {icon.map((item, index) => (
-            <FooterIcon $isActive={titleID == index}>
+            <FooterIcon $isActive={titleID == index} key={index}>
               <FontAwesomeIcon
                 icon={item}
                 key={index}

@@ -756,6 +756,7 @@ function Profile() {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userSecondHand");
+    localStorage.removeItem("userList")
     setUserToken([]);
     setProfile(null);
     setSecondHand([]);
