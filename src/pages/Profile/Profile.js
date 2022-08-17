@@ -4,6 +4,7 @@ import styled from "styled-components";
 import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
 import trash from "./cart-remove.png";
+import api from "../../utils/api";
 
 const Wrapper = styled.div`
   min-height: calc(100vh - 255px);
@@ -463,6 +464,7 @@ function Profile() {
   const [userToken, setUserToken] = useState(
     localStorage.getItem("userToken") || []
   );
+  const cartItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
@@ -653,6 +655,8 @@ function Profile() {
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const getUserProfile = async (token) => {
     const response = await fetch(
@@ -721,6 +725,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
     await getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const fbLogin = async () => {
     const data = {
@@ -743,6 +749,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
     getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const Logout = () => {
     localStorage.removeItem("userToken");

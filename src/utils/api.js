@@ -67,6 +67,26 @@ const api = {
     const response = await fetch(`${this.coworkname}/second-hand/${id}`);
     return await response.json();
   },
+  async addNewItemsInCart(data, token) {
+    const response = await fetch(`${this.coworkname}/shopping-cart`, {
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }),
+      method: "POST",
+    });
+    return await response.json();
+  },
+  async getUserCartItem(token) {
+    const response = await fetch(`${this.coworkname}/shopping-cart`, {
+      headers: new Headers({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }),
+    });
+    return await response.json();
+  },
 };
 
 export default api;

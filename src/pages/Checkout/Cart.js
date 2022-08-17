@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-
+import api from "../../utils/api";
 import CartContext from "../../contexts/CartContext";
 import trash from "./trash.png";
 
@@ -211,64 +211,78 @@ const DeleteButton = styled.div`
 `;
 
 function Cart() {
+  const userToken = localStorage.getItem("userToken") || "";
   const cart = useContext(CartContext);
-  const items = cart.getItems();
+  const [items, setItems] = useState();
 
-  return (
-    <>
-      <Header>
-        <ItemCount>購物車({items.length})</ItemCount>
-        <Quantity hideOnMobile>數量</Quantity>
-        <UnitPrice hideOnMobile>單價</UnitPrice>
-        <Price hideOnMobile>小計</Price>
-        <Empty />
-      </Header>
-      <Items>
-        {items.map((item, index) => (
-          <Item key={`${item.id}-${item.color.code}-${item.size}`}>
-            <ItemImage src={item.image} />
-            <ItemDetails>
-              <ItemName>{item.name}</ItemName>
-              <ItemID>{item.id}</ItemID>
-              {item.isStylish ? (
-                <>
-                  <ItemColorName>顏色｜{item.color.name}</ItemColorName>
-                  <ItemSize>尺寸｜{item.size}</ItemSize>
-                </>
-              ) : (
-                <>
-                  <ItemColorName>賣家｜{item.seller}</ItemColorName>
-                  <ItemSize>類別｜二手商品</ItemSize>
-                </>
-              )}
-            </ItemDetails>
-            <ItemQuantity>
-              <ItemQuantityName hideOnDesktop>數量</ItemQuantityName>
-              <ItemQuantitySelect
-                value={item.qty}
-                onChange={(e) => cart.changeItemQuantity(index, e.target.value)}
-              >
-                {Array(item.stock)
-                  .fill()
-                  .map((_, index) => (
-                    <option key={index}>{index + 1}</option>
-                  ))}
-              </ItemQuantitySelect>
-            </ItemQuantity>
-            <ItemUnitPrice>
-              <ItemUnitPriceName hideOnDesktop>單價</ItemUnitPriceName>
-              <ItemUnitPriceValue>NT.{item.price}</ItemUnitPriceValue>
-            </ItemUnitPrice>
-            <ItemPrice>
-              <ItemPriceName hideOnDesktop>小計</ItemPriceName>
-              <ItemPriceValue>NT.{item.qty * item.price}</ItemPriceValue>
-            </ItemPrice>
-            <DeleteButton onClick={() => cart.deleteItem(index)} />
-          </Item>
-        ))}
-      </Items>
-    </>
-  );
+  useEffect(() => {
+    async function getUserCartItem(userToken) {
+      const data = await api.getUserCartItem(userToken);
+      setItems(data);
+    }
+    getUserCartItem(userToken);
+  }, []);
+
+  console.log(items);
+  if (items) {
+    return (
+      <>
+        <Header>
+          <ItemCount>購物車({items.length})</ItemCount>
+          <Quantity hideOnMobile>數量</Quantity>
+          <UnitPrice hideOnMobile>單價</UnitPrice>
+          <Price hideOnMobile>小計</Price>
+          <Empty />
+        </Header>
+        <Items>
+          {items.map((item, index) => (
+            <Item key={`${item.id}-${item.color.code}-${item.size}`}>
+              <ItemImage src={item.image} />
+              <ItemDetails>
+                <ItemName>{item.name}</ItemName>
+                <ItemID>{item.id}</ItemID>
+                {item.isStylish ? (
+                  <>
+                    <ItemColorName>顏色｜{item.color.name}</ItemColorName>
+                    <ItemSize>尺寸｜{item.size}</ItemSize>
+                  </>
+                ) : (
+                  <>
+                    <ItemColorName>賣家｜{item.seller}</ItemColorName>
+                    <ItemSize>類別｜二手商品</ItemSize>
+                  </>
+                )}
+              </ItemDetails>
+              <ItemQuantity>
+                <ItemQuantityName hideOnDesktop>數量</ItemQuantityName>
+                <ItemQuantitySelect
+                  value={item.qty}
+                  onChange={(e) =>
+                    cart.changeItemQuantity(index, e.target.value)
+                  }
+                >
+                  {Array(item.stock)
+                    .fill()
+                    .map((_, index) => (
+                      <option key={index}>{index + 1}</option>
+                    ))}
+                </ItemQuantitySelect>
+              </ItemQuantity>
+              <ItemUnitPrice>
+                <ItemUnitPriceName hideOnDesktop>單價</ItemUnitPriceName>
+                <ItemUnitPriceValue>NT.{item.price}</ItemUnitPriceValue>
+              </ItemUnitPrice>
+              <ItemPrice>
+                <ItemPriceName hideOnDesktop>小計</ItemPriceName>
+                <ItemPriceValue>NT.{item.qty * item.price}</ItemPriceValue>
+              </ItemPrice>
+              <DeleteButton onClick={() => cart.deleteItem(index)} />
+            </Item>
+          ))}
+        </Items>
+      </>
+    );
+  }
 }
 
 export default Cart;

@@ -431,8 +431,8 @@ const SecondHandProduct = () => {
     return null;
   }
 
-  function addToCart(product) {
-    cart.addItem({
+  async function addToCart(product, token) {
+    const item = {
       color: { code: "334455", name: "深藍" },
       id: product.id,
       isStylish: false,
@@ -443,8 +443,12 @@ const SecondHandProduct = () => {
       size: "S",
       stock: 1,
       seller: product.seller,
-    });
-    console.log(product);
+    };
+    if (!token) {
+      cart.addItem(item);
+    } else {
+      await api.addNewItemsInCart(item, token);
+    }
   }
 
   return (
@@ -476,7 +480,7 @@ const SecondHandProduct = () => {
         </DetailWrap>
         <CartButtonWrap>
           <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
-          <AddToCart onClick={() => addToCart(secondHandProduct)}>
+          <AddToCart onClick={() => addToCart(secondHandProduct, userToken)}>
             加入購物車
           </AddToCart>
         </CartButtonWrap>
