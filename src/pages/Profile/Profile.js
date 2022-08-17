@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import api from "../../utils/api";
 import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
 import trash from "./cart-remove.png";
+import api from "../../utils/api";
 
 const Wrapper = styled.div`
   min-height: calc(100vh - 255px);
@@ -465,6 +464,7 @@ function Profile() {
   const [userToken, setUserToken] = useState(
     localStorage.getItem("userToken") || []
   );
+  const cartItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
@@ -487,7 +487,6 @@ function Profile() {
     other_images_2: null,
   });
   const [titleID, setTitleID] = useState(0);
-  const [innerWidth, setInnerWidth] = useState(window.innerWidth);
   const formData = new FormData();
   const styling = {
     flexDirection() {
@@ -656,6 +655,8 @@ function Profile() {
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const getUserProfile = async (token) => {
     const response = await fetch(
@@ -724,6 +725,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
     await getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const fbLogin = async () => {
     const data = {
@@ -746,6 +749,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
     getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const Logout = () => {
     localStorage.removeItem("userToken");
@@ -915,6 +920,10 @@ function Profile() {
       setIsUploaded(true);
     }
   }, [uploaded]);
+
+  window.document.body.onbeforeunload = function () {
+    return "您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？";
+  };
 
   return (
     <Wrapper>

@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import styled from "styled-components";
-
+import api from "../../utils/api";
 import logo from "./logo.png";
 import search from "./search.png";
 import cart from "./cart.png";
@@ -256,60 +256,69 @@ function Header() {
   const category = searchParams.get("category");
   const location = useLocation();
   const secondHandCategory = location.pathname.split("/")[1];
-  const { getItems } = useContext(CartContext);
-
+  const cart = useContext(CartContext);
+  const [userToken, setUserToken] = useState(
+    localStorage.getItem("userToken") || ""
+  );
   useEffect(() => {
     if (category) setInputValue("");
   }, [category]);
 
-  return (
-    <Wrapper>
-      <Logo to="/" />
-      <CategoryLinks>
-        {categories.map(({ name, displayText }, index) =>
-          name === "secondhandclothing" ? (
-            <CategoryLink
-              style={{ letterSpacing: "15px" }}
-              to={`/secondhandclothing`}
-              $isActive={secondHandCategory === name}
-              key={index}
-            >
-              {displayText}
-            </CategoryLink>
-          ) : (
-            <CategoryLink
-              to={`/?category=${name}`}
-              $isActive={category === name}
-              key={index}
-            >
-              {displayText}
-            </CategoryLink>
-          )
-        )}
-      </CategoryLinks>
-      <SearchInput
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            navigate(`/?keyword=${inputValue}`);
-          }
-        }}
-        onChange={(e) => setInputValue(e.target.value)}
-        value={inputValue}
-      />
-      <PageLinks>
-        <PageLink to="/checkout">
-          <PageLinkCartIcon icon={cart}>
-            <PageLinkIconNumber>{getItems().length}</PageLinkIconNumber>
-          </PageLinkCartIcon>
-          <PageLinkText>購物車</PageLinkText>
-        </PageLink>
-        <PageLink to="/profile">
-          <PageLinkProfileIcon icon={profile} />
-          <PageLinkText>會員</PageLinkText>
-        </PageLink>
-      </PageLinks>
-    </Wrapper>
-  );
+  useEffect(() => {
+    setUserToken(localStorage.getItem("userToken"));
+    cart.getUserCartItem(userToken);
+  }, [cart.cartItems]);
+
+  if (cart.cartItems) {
+    return (
+      <Wrapper>
+        <Logo to="/" />
+        <CategoryLinks>
+          {categories.map(({ name, displayText }, index) =>
+            name === "secondhandclothing" ? (
+              <CategoryLink
+                style={{ letterSpacing: "15px" }}
+                to={`/secondhandclothing`}
+                $isActive={secondHandCategory === name}
+                key={index}
+              >
+                {displayText}
+              </CategoryLink>
+            ) : (
+              <CategoryLink
+                to={`/?category=${name}`}
+                $isActive={category === name}
+                key={index}
+              >
+                {displayText}
+              </CategoryLink>
+            )
+          )}
+        </CategoryLinks>
+        <SearchInput
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              navigate(`/?keyword=${inputValue}`);
+            }
+          }}
+          onChange={(e) => setInputValue(e.target.value)}
+          value={inputValue}
+        />
+        <PageLinks>
+          <PageLink to="/checkout">
+            <PageLinkCartIcon icon={cart}>
+              <PageLinkIconNumber>{cart.cartItems.length}</PageLinkIconNumber>
+            </PageLinkCartIcon>
+            <PageLinkText>購物車</PageLinkText>
+          </PageLink>
+          <PageLink to="/profile">
+            <PageLinkProfileIcon icon={profile} />
+            <PageLinkText>會員</PageLinkText>
+          </PageLink>
+        </PageLinks>
+      </Wrapper>
+    );
+  }
 }
 
 export default Header;

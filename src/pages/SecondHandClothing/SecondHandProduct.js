@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
@@ -31,6 +31,7 @@ import {
   Images,
   Image,
 } from "../Product/Product";
+import CartContext from "../../contexts/CartContext";
 
 //chatmainpage
 
@@ -39,7 +40,7 @@ const ChatIcon = styled.div`
   position: fixed;
   font-size: 25px;
   bottom: 15px;
-  right: 18px;
+  right: 15px;
   width: 60px;
   height: 60px;
   display: flex;
@@ -67,7 +68,7 @@ const ChatContainer = styled.div`
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
   z-index: 999;
-  right: 18px;
+  right: 15px;
   padding: 28px 20px;
   @media screen and (max-width: 1279px) {
     bottom: 75px;
@@ -169,6 +170,9 @@ const ChatroomDetailWrapper = styled.div`
   border-radius: 6px;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  @media screen and (max-width: 1279px) {
+    bottom: 75px;
+  }
 `;
 
 const ChatroomDetailMain = styled.div`
@@ -373,6 +377,7 @@ const SecondHandProduct = () => {
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
+  const cart = useContext(CartContext);
 
   const sendMessageClick = (e) => {
     const request = {
@@ -390,7 +395,6 @@ const SecondHandProduct = () => {
     }
     getSecondHandProduct();
   }, [id]);
-
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -415,18 +419,14 @@ const SecondHandProduct = () => {
     }
   }, [chatroomScrollHeight]);
 
-
   useEffect(() => {
-    async function getSecondHandProduct() {
-      const data = await api.getSecondHandProduct(id);
-      setSecondHandProduct(data);
-    }
-    getSecondHandProduct();
+    cart.getUserCartItem(userToken);
   }, [id]);
 
   if (!secondHandProduct) {
     return null;
   }
+
   return (
     <Wrapper>
       <MainImage src={secondHandProduct.main_image} />
@@ -456,7 +456,11 @@ const SecondHandProduct = () => {
         </DetailWrap>
         <CartButtonWrap>
           <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
-          <AddToCart>加入購物車</AddToCart>
+          <AddToCart
+            onClick={() => cart.addToCart(secondHandProduct, userToken)}
+          >
+            加入購物車
+          </AddToCart>
         </CartButtonWrap>
 
         <DetailWrap
