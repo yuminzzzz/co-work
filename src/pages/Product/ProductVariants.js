@@ -108,6 +108,8 @@ const AddToCart = styled.button`
   letter-spacing: 4px;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
+  border-radius: 20px;
 
   @media screen and (max-width: 1279px) {
     height: 44px;
@@ -115,6 +117,9 @@ const AddToCart = styled.button`
     font-size: 16px;
     letter-spacing: 3.2px;
     color: white;
+  }
+  &:hover {
+    background-color: #69523d;
   }
 `;
 

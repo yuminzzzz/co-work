@@ -211,6 +211,10 @@ const ReceiverMessageAll = (props) => {
   );
 };
 
+const CartButtonWrap = styled.div`
+  display: flex;
+`;
+
 //
 
 const SecondHandProduct = () => {
@@ -222,7 +226,7 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
-
+  console.log(secondHandProduct);
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
       transports: ["websocket", "polling", "flashsocket"],
@@ -248,12 +252,11 @@ const SecondHandProduct = () => {
 
   const sendMessageClick = (e) => {
     const request = {
-      targetId: 1,
+      targetId: secondHandProduct.sellerId,
       msg: msg,
     };
     e.preventDefault();
     socketRef.current.emit("private chat", request);
-    // chatroom.current.scrollIntoView({ behavior: "smooth" });
     setMsg("");
     console.log(e.target);
   };
@@ -296,7 +299,10 @@ const SecondHandProduct = () => {
           <DetailTitle style={{ width: "100px" }}>賣家</DetailTitle>
           {secondHandProduct.seller}
         </DetailWrap>
-        <AddToCart>加入購物車</AddToCart>
+        <CartButtonWrap>
+          <AddToCart style={{ marginRight: "10px" }}>聊聊詢問</AddToCart>
+          <AddToCart>加入購物車</AddToCart>
+        </CartButtonWrap>
 
         <DetailWrap
           style={{
@@ -323,8 +329,10 @@ const SecondHandProduct = () => {
       </Images>
       <ChatroomDetailWrapper>
         <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
+        {/* user name */}
         <ChatroomDetailMain ref={chatroom}>
           {allMessage.map((message, index) => {
+            // user index => state
             return message.self ? (
               <SendMessageAll allMessage={allMessage[index]} />
             ) : (
