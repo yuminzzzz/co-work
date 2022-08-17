@@ -32,7 +32,9 @@ import {
   Image,
 } from "../Product/Product";
 
+
 //chatmainpage
+
 
 const ChatIcon = styled.div`
   color: #fff;
@@ -344,6 +346,15 @@ const CartButtonWrap = styled.div`
   display: flex;
 `;
 
+const FooterIcon = styled.div`
+  color: ${(props) => (props.$isActive ? "salmon" : "#bfccdf")};
+  cursor: pointer;
+  z-index: 0;
+  &:hover {
+    color: salmon;
+  }
+`;
+
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
   const [msg, setMsg] = useState();
@@ -353,6 +364,24 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
+
+  useEffect(() => {
+    async function getSecondHandProduct() {
+      const data = await api.getSecondHandProduct(id);
+      setSecondHandProduct(data);
+    }
+    getSecondHandProduct();
+  }, [id]);
+
+  useEffect(() => {
+    socketRef.current = io.connect("http://localhost:3000/", {
+      extraHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  });
+
+  //yuming
   const name = [
     "William Wright",
     "Ollie Chandler",
@@ -408,6 +437,8 @@ const SecondHandProduct = () => {
   if (!secondHandProduct) {
     return null;
   }
+  const token = localStorage.getItem("userToken");
+
   return (
     <Wrapper>
       <MainImage src={secondHandProduct.main_image} />
@@ -486,6 +517,7 @@ const SecondHandProduct = () => {
           <SubmitButton id="submit">{"<<"}</SubmitButton>
         </ChatroomDetailFooter>
       </ChatroomDetailWrapper>
+
       {/* chatmainpage */}
       <ChatIcon onClick={() => setChatSwitch(true)}>
         <FontAwesomeIcon icon={faComments} />
@@ -506,9 +538,22 @@ const SecondHandProduct = () => {
             </ChatItem>
           ))}
         </ChatBody>
-        <ChatFooter onClick={(e) => setTitleID(e.target.id)}>
+        <ChatFooter
+          onClick={(e) => {
+            if (e.target.id) {
+              setTitleID(e.target.id);
+            }
+          }}
+        >
           {icon.map((item, index) => (
-            <FontAwesomeIcon icon={item} key={index} />
+            <FooterIcon $isActive={titleID == index}>
+              <FontAwesomeIcon
+                icon={item}
+                key={index}
+                id={index}
+                style={{ zIndex: "999" }}
+              />
+            </FooterIcon>
           ))}
         </ChatFooter>
       </ChatContainer>
