@@ -18,7 +18,7 @@ import CartContext from "../../contexts/CartContext";
 const Wrapper = styled.div`
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 998;
   height: 140px;
   width: 100%;
   padding: 0 54px 0 60px;

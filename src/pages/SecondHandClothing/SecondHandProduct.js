@@ -3,7 +3,20 @@ import { useEffect, useState, useRef } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPersonSkiing } from "@fortawesome/free-solid-svg-icons";
+import { faMessage } from "@fortawesome/free-regular-svg-icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { AddToCart } from "../Product/ProductVariants";
+import {
+  PriceWrapper,
+  DetailTitle,
+  DetailWrap,
+} from "../Bidding/BiddingProduct";
 import {
   Wrapper,
   MainImage,
@@ -19,15 +32,134 @@ import {
   Image,
 } from "../Product/Product";
 
-import {
-  PriceWrapper,
-  DetailTitle,
-  DetailWrap,
-} from "../Bidding/BiddingProduct";
+//chatmainpage
 
-import { AddToCart } from "../Product/ProductVariants";
+const ChatIcon = styled.div`
+  color: #fff;
+  position: fixed;
+  font-size: 25px;
+  bottom: 15px;
+  right: 18px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  background-color: salmon;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 4px 2px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  z-index: 999;
+  @media screen and (max-width: 1279px) {
+    bottom: 75px;
+  }
+  &:hover {
+    transition: 0.3s;
+    transform: translate(-3px, -10px);
+  }
+`;
 
-// zzuhann =============
+const ChatContainer = styled.div`
+  width: 375px;
+  height: 600px;
+  position: fixed;
+  bottom: 15px;
+  background-color: #f6f9fb;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  z-index: 999;
+  right: 18px;
+  padding: 28px 20px;
+  @media screen and (max-width: 1279px) {
+    bottom: 75px;
+  }
+`;
+
+const ReturnLastPage = styled.button`
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 28px;
+  top: -33px;
+  border-radius: 20px;
+  border-style: none;
+  background-color: #99a1b1;
+  color: #fff;
+  font-size: 12px;
+  z-index: 999;
+  cursor: pointer;
+  &:hover {
+    transition: 0.2s;
+    background-color: #707c92;
+  }
+`;
+
+const ChatHeader = styled.h1`
+  line-height: 32px;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
+const ChatBody = styled.div`
+  width: 100%;
+  height: 520px;
+  padding-bottom: 56px;
+  overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ChatItem = styled.div`
+  width: 100%;
+  padding: 20px 24px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0.1px 0.1px 0;
+  border-radius: 10px;
+  background-color: #fff;
+  margin-bottom: 20px;
+  display: flex;
+  cursor: pointer;
+  position: relative;
+`;
+
+const UserAvatar = styled.img`
+  border: solid 1px black;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+`;
+
+const UserName = styled.p`
+  padding-left: 16px;
+  font-weight: bold;
+`;
+
+const ReceiveTime = styled.p`
+  font-size: 12px;
+  line-height: 16px;
+  position: absolute;
+  right: 20px;
+  color: #bfccdf;
+`;
+
+const ChatFooter = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: #fff;
+  width: 375px;
+  height: 56px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  font-size: 24px;
+  color: #bfccdf;
+  transition: 0.3s;
+`;
+
+//chatpage
+
 const ChatroomDetailWrapper = styled.div`
   width: 375px;
   position: fixed;
@@ -37,9 +169,6 @@ const ChatroomDetailWrapper = styled.div`
   border-radius: 6px;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
-  @media screen and (max-width: 1279px) {
-    bottom: 75px;
-  }
 `;
 
 const ChatroomDetailMain = styled.div`
@@ -215,8 +344,6 @@ const CartButtonWrap = styled.div`
   display: flex;
 `;
 
-//
-
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
   const [msg, setMsg] = useState();
@@ -226,7 +353,17 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
-  console.log(secondHandProduct);
+  const name = [
+    "William Wright",
+    "Ollie Chandler",
+    "Elise Dennis",
+    "Warren White",
+    "Mila White",
+    "Damian Biander",
+  ];
+  const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
+  const [titleID, setTitleID] = useState(2);
+  const [chatSwitch, setChatSwitch] = useState(false);
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
       transports: ["websocket", "polling", "flashsocket"],
@@ -258,7 +395,6 @@ const SecondHandProduct = () => {
     e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
-    console.log(e.target);
   };
 
   useEffect(() => {
@@ -327,6 +463,7 @@ const SecondHandProduct = () => {
           <Image src={image} key={index} />
         ))}
       </Images>
+      {/* chatpage */}
       <ChatroomDetailWrapper>
         <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
         {/* user name */}
@@ -349,6 +486,32 @@ const SecondHandProduct = () => {
           <SubmitButton id="submit">{"<<"}</SubmitButton>
         </ChatroomDetailFooter>
       </ChatroomDetailWrapper>
+      {/* chatmainpage */}
+      <ChatIcon onClick={() => setChatSwitch(true)}>
+        <FontAwesomeIcon icon={faComments} />
+      </ChatIcon>
+      <ChatContainer
+        style={chatSwitch ? { display: "block" } : { display: "none" }}
+      >
+        <ReturnLastPage onClick={() => setChatSwitch(false)}>
+          <FontAwesomeIcon icon={faXmark} />
+        </ReturnLastPage>
+        <ChatHeader>聊天</ChatHeader>
+        <ChatBody>
+          {name.map((item, index) => (
+            <ChatItem key={index}>
+              <UserAvatar></UserAvatar>
+              <UserName>{item}</UserName>
+              <ReceiveTime>12:45 PM</ReceiveTime>
+            </ChatItem>
+          ))}
+        </ChatBody>
+        <ChatFooter onClick={(e) => setTitleID(e.target.id)}>
+          {icon.map((item, index) => (
+            <FontAwesomeIcon icon={item} key={index} />
+          ))}
+        </ChatFooter>
+      </ChatContainer>
     </Wrapper>
   );
 };
