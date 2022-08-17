@@ -191,7 +191,8 @@ const SendMessageAll = (props) => {
       <SenderMessage>{props.allMessage.msg}</SenderMessage>
       <SendImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
       <SenderMessageTime>
-        {props.allMessage.time || "10:39 AM"}
+        {new Date(Date.parse(props.allMessage.time)).getHours()}:
+        {new Date(Date.parse(props.allMessage.time)).getMinutes()}
       </SenderMessageTime>
     </SendMessageWrapper>
   );
@@ -203,7 +204,8 @@ const ReceiverMessageAll = (props) => {
       <ReceiveImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
       <ReceiveMessage>{props.allMessage.msg}</ReceiveMessage>
       <ReceiverMessageTime>
-        {props.allMessage.time || "10:39 AM"}
+        {new Date(Date.parse(props.allMessage.time)).getHours()}:
+        {new Date(Date.parse(props.allMessage.time)).getMinutes()}
       </ReceiverMessageTime>
     </ReceiveMessageWrapper>
   );
@@ -214,12 +216,12 @@ const ReceiverMessageAll = (props) => {
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
   const [msg, setMsg] = useState();
+  const chatroom = useRef();
+  const [chatroomScrollHeight, setChatroomScrollHeight] = useState("");
   const { id } = useParams();
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
-  const [allMessage, setAllMessage] = useState([
-    { self: false, user: "User1", msg: "2 to 1" },
-  ]);
+  const [allMessage, setAllMessage] = useState([]);
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -232,11 +234,17 @@ const SecondHandProduct = () => {
 
   if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
-      console.log(data);
       let newMessage = [...allMessage, data];
       setAllMessage(newMessage);
+      setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
+
+  useEffect(() => {
+    if (chatroom.current) {
+      chatroom.current.scrollTop = chatroomScrollHeight;
+    }
+  }, [chatroomScrollHeight]);
 
   const sendMessageClick = (e) => {
     const request = {
@@ -245,6 +253,7 @@ const SecondHandProduct = () => {
     };
     e.preventDefault();
     socketRef.current.emit("private chat", request);
+    // chatroom.current.scrollIntoView({ behavior: "smooth" });
     setMsg("");
     console.log(e.target);
   };
@@ -314,7 +323,7 @@ const SecondHandProduct = () => {
       </Images>
       <ChatroomDetailWrapper>
         <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
-        <ChatroomDetailMain>
+        <ChatroomDetailMain ref={chatroom}>
           {allMessage.map((message, index) => {
             return message.self ? (
               <SendMessageAll allMessage={allMessage[index]} />
