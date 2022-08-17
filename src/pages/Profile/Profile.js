@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import api from "../../utils/api";
 import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
 import trash from "./cart-remove.png";

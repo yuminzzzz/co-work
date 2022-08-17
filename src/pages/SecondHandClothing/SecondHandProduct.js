@@ -379,8 +379,6 @@ const SecondHandProduct = () => {
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
 
-  console.log(secondHandProduct);
-
   const sendMessageClick = (e) => {
     const request = {
       targetId: secondHandProduct.sellerId,

@@ -153,6 +153,7 @@ function ProductVariants({ product }) {
       qty: quantity,
       size: selectedSize,
       stock: getStock(selectedColorCode, selectedSize),
+      seller: "Stylish",
     });
   }
   return (

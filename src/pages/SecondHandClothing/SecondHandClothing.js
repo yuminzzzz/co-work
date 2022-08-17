@@ -3,28 +3,29 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import api from "../../utils/api";
 import BiddingList from "./BiddingList";
+import Carousel from "./SecondHandCarousel";
 
-const CarouselWrapper = styled.div`
-  height: 400px;
-  position: relative;
+// const CarouselWrapper = styled.div`
+//   height: 400px;
+//   position: relative;
 
-  @media screen and (max-width: 1279px) {
-    height: 200px;
-  }
-`;
+//   @media screen and (max-width: 1279px) {
+//     height: 200px;
+//   }
+// `;
 
-const Carousel = styled(Link)`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  background-size: cover;
-  background-position: center;
-  background-image: url("https://doqvf81n9htmm.cloudfront.net/data/crop_article/25991/96-f.jpg_1140x855.jpg");
-  text-decoration: none;
-  @media screen and (max-width: 1279px) {
-    background-position: center 40%;
-  }
-`;
+// const Carousel = styled(Link)`
+//   width: 100%;
+//   height: 100%;
+//   position: absolute;
+//   background-size: cover;
+//   background-position: center;
+//   background-image: url("https://doqvf81n9htmm.cloudfront.net/data/crop_article/25991/96-f.jpg_1140x855.jpg");
+//   text-decoration: none;
+//   @media screen and (max-width: 1279px) {
+//     background-position: center 40%;
+//   }
+// `;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -120,9 +121,10 @@ function SecondHandClothing() {
   if (auctions.length > 0) {
     return (
       <>
-        <CarouselWrapper>
+        {/* <CarouselWrapper>
           <Carousel to="#"></Carousel>
-        </CarouselWrapper>
+        </CarouselWrapper> */}
+        <Carousel />
 
         <Wrapper>
           <BiddingTitle>二手服飾競標專區</BiddingTitle>
