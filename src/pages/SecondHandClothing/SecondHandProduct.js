@@ -32,9 +32,7 @@ import {
   Image,
 } from "../Product/Product";
 
-
 //chatmainpage
-
 
 const ChatIcon = styled.div`
   color: #fff;
@@ -364,24 +362,6 @@ const SecondHandProduct = () => {
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
   const [allMessage, setAllMessage] = useState([]);
-
-  useEffect(() => {
-    async function getSecondHandProduct() {
-      const data = await api.getSecondHandProduct(id);
-      setSecondHandProduct(data);
-    }
-    getSecondHandProduct();
-  }, [id]);
-
-  useEffect(() => {
-    socketRef.current = io.connect("http://localhost:3000/", {
-      extraHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  });
-
-  //yuming
   const name = [
     "William Wright",
     "Ollie Chandler",
@@ -393,6 +373,25 @@ const SecondHandProduct = () => {
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
+
+  const sendMessageClick = (e) => {
+    const request = {
+      targetId: secondHandProduct.sellerId,
+      msg: msg,
+    };
+    e.preventDefault();
+    socketRef.current.emit("private chat", request);
+    setMsg("");
+  };
+  useEffect(() => {
+    async function getSecondHandProduct() {
+      const data = await api.getSecondHandProduct(id);
+      setSecondHandProduct(data);
+    }
+    getSecondHandProduct();
+  }, [id]);
+
+
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
       transports: ["websocket", "polling", "flashsocket"],
@@ -416,15 +415,6 @@ const SecondHandProduct = () => {
     }
   }, [chatroomScrollHeight]);
 
-  const sendMessageClick = (e) => {
-    const request = {
-      targetId: secondHandProduct.sellerId,
-      msg: msg,
-    };
-    e.preventDefault();
-    socketRef.current.emit("private chat", request);
-    setMsg("");
-  };
 
   useEffect(() => {
     async function getSecondHandProduct() {
@@ -437,8 +427,6 @@ const SecondHandProduct = () => {
   if (!secondHandProduct) {
     return null;
   }
-  const token = localStorage.getItem("userToken");
-
   return (
     <Wrapper>
       <MainImage src={secondHandProduct.main_image} />
