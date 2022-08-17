@@ -3,14 +3,6 @@ import { useEffect, useState, useRef, useContext } from "react";
 import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComments } from "@fortawesome/free-solid-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { faPersonSkiing } from "@fortawesome/free-solid-svg-icons";
-import { faMessage } from "@fortawesome/free-regular-svg-icons";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { AddToCart } from "../Product/ProductVariants";
 import {
   PriceWrapper,
@@ -32,6 +24,16 @@ import {
   Image,
 } from "../Product/Product";
 import CartContext from "../../contexts/CartContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPersonSkiing } from "@fortawesome/free-solid-svg-icons";
+import { faMessage } from "@fortawesome/free-regular-svg-icons";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faAnglesLeft } from "@fortawesome/free-solid-svg-icons";
 
 //chatmainpage
 
@@ -75,7 +77,7 @@ const ChatContainer = styled.div`
   }
 `;
 
-const ReturnLastPage = styled.button`
+const CloseChatroom = styled.button`
   position: absolute;
   right: 0;
   width: 40px;
@@ -166,7 +168,7 @@ const ChatroomDetailWrapper = styled.div`
   position: fixed;
   bottom: 15px;
   z-index: 999;
-  right: 15px;
+  right: 18px;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
@@ -246,6 +248,15 @@ const ReceiveImage = styled(UserImage)`
   left: 10px;
 `;
 
+const ReturnChatroom = styled.div`
+  font-size: 18px;
+  position: absolute;
+  top: 24px;
+  left: 12px;
+  cursor: pointer;
+  z-index: 999;
+`;
+
 const ChatroomDetailHeader = styled.div`
   width: 100%;
   height: 70px;
@@ -280,6 +291,9 @@ const SubmitButton = styled.button`
   text-align: center;
   line-height: 45px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ChatroomInput = styled.input`
@@ -378,6 +392,7 @@ const SecondHandProduct = () => {
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
+  const [chatpageSwitch, setChatpageSwitch] = useState(false);
 
   const sendMessageClick = (e) => {
     const request = {
@@ -487,43 +502,68 @@ const SecondHandProduct = () => {
         ))}
       </Images>
       {/* chatpage */}
-      <ChatroomDetailWrapper>
-        <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
-        {/* user name */}
-        <ChatroomDetailMain ref={chatroom}>
-          {allMessage.map((message, index) => {
-            // user index => state
-            return message.self ? (
-              <SendMessageAll allMessage={allMessage[index]} />
-            ) : (
-              <ReceiverMessageAll allMessage={allMessage[index]} />
-            );
-          })}
-        </ChatroomDetailMain>
-        <ChatroomDetailFooter onSubmit={(e) => sendMessageClick(e)}>
-          <ChatroomInput
-            placeholder="Type your message ..."
-            onChange={(e) => setMsg(e.target.value)}
-            value={msg || ""}
-          />
-          <SubmitButton id="submit">{"<<"}</SubmitButton>
-        </ChatroomDetailFooter>
-      </ChatroomDetailWrapper>
+      {chatpageSwitch && (
+        <ChatroomDetailWrapper>
+          <ReturnChatroom
+            onClick={() => {
+              setChatpageSwitch(false);
+              setChatSwitch(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faAnglesLeft} />
+          </ReturnChatroom>
+          <ChatroomDetailHeader>Peter Chen</ChatroomDetailHeader>
+          {/* user name */}
+          <ChatroomDetailMain ref={chatroom}>
+            {allMessage.map((message, index) => {
+              // user index => state
+              return message.self ? (
+                <SendMessageAll allMessage={allMessage[index]} />
+              ) : (
+                <ReceiverMessageAll allMessage={allMessage[index]} />
+              );
+            })}
+          </ChatroomDetailMain>
+          <ChatroomDetailFooter onSubmit={(e) => sendMessageClick(e)}>
+            <ChatroomInput
+              placeholder="Type your message ..."
+              onChange={(e) => setMsg(e.target.value)}
+              value={msg || ""}
+            />
+            <SubmitButton id="submit">
+              {<FontAwesomeIcon icon={faPaperPlane} />}
+            </SubmitButton>
+          </ChatroomDetailFooter>
+        </ChatroomDetailWrapper>
+      )}
 
       {/* chatmainpage */}
-      <ChatIcon onClick={() => setChatSwitch(true)}>
+      <ChatIcon
+        onClick={() => setChatSwitch(true)}
+        style={
+          chatSwitch || chatpageSwitch
+            ? { display: "none" }
+            : { display: "flex" }
+        }
+      >
         <FontAwesomeIcon icon={faComments} />
       </ChatIcon>
       <ChatContainer
         style={chatSwitch ? { display: "block" } : { display: "none" }}
       >
-        <ReturnLastPage onClick={() => setChatSwitch(false)}>
+        <CloseChatroom onClick={() => setChatSwitch(false)}>
           <FontAwesomeIcon icon={faXmark} />
-        </ReturnLastPage>
+        </CloseChatroom>
         <ChatHeader>聊天</ChatHeader>
         <ChatBody>
           {name.map((item, index) => (
-            <ChatItem key={index}>
+            <ChatItem
+              key={index}
+              onClick={() => {
+                setChatpageSwitch(true);
+                setChatSwitch(false);
+              }}
+            >
               <UserAvatar></UserAvatar>
               <UserName>{item}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
