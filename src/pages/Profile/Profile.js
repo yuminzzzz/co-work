@@ -487,7 +487,6 @@ function Profile() {
     other_images_2: null,
   });
   const [titleID, setTitleID] = useState(0);
-  const [innerWidth, setInnerWidth] = useState(window.innerWidth);
   const formData = new FormData();
   const styling = {
     flexDirection() {
@@ -915,6 +914,10 @@ function Profile() {
       setIsUploaded(true);
     }
   }, [uploaded]);
+
+  window.document.body.onbeforeunload = function () {
+    return "您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？";
+  };
 
   return (
     <Wrapper>

@@ -40,7 +40,7 @@ const ChatIcon = styled.div`
   position: fixed;
   font-size: 25px;
   bottom: 15px;
-  right: 18px;
+  right: 15px;
   width: 60px;
   height: 60px;
   display: flex;
@@ -68,7 +68,7 @@ const ChatContainer = styled.div`
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
   z-index: 999;
-  right: 18px;
+  right: 15px;
   padding: 28px 20px;
   @media screen and (max-width: 1279px) {
     bottom: 75px;
@@ -170,6 +170,9 @@ const ChatroomDetailWrapper = styled.div`
   border-radius: 6px;
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  @media screen and (max-width: 1279px) {
+    bottom: 75px;
+  }
 `;
 
 const ChatroomDetailMain = styled.div`
