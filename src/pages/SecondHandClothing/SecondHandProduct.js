@@ -29,16 +29,21 @@ import { AddToCart } from "../Product/ProductVariants";
 
 // zzuhann =============
 const ChatroomDetailWrapper = styled.div`
-  width: 400px;
+  width: 375px;
   position: fixed;
-  bottom: 130px;
+  bottom: 15px;
   z-index: 999;
   right: 15px;
-  border: solid 1px black;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 2px 4px 0, rgba(0, 0, 0, 0.1) 0 8px 16px 0;
+  @media screen and (max-width: 1279px) {
+    bottom: 75px;
+  }
 `;
 
 const ChatroomDetailMain = styled.div`
-  height: 400px;
+  height: 460px;
   width: 100%;
   display: flex;
   align-items: flex-start;
@@ -53,9 +58,11 @@ const MessageWrapper = styled.div`
   border-radius: solid 1px black;
   align-self: flex-end;
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  max-width: 400px;
 `;
 
 const SendMessageWrapper = styled(MessageWrapper)`
@@ -68,39 +75,42 @@ const ReceiveMessageWrapper = styled(MessageWrapper)`
 
 const Message = styled.div`
   border-radius: 5px;
-  max-width: 280px;
+  max-width: 220px;
+  word-break: break-all;
   display: inline-block;
   position: relative;
   padding: 10px 15px;
+  line-height: 25px;
+  letter-spacing: 1.25px;
 `;
 
 const SenderMessage = styled(Message)`
   background-color: #2787f5;
   color: #fff;
-  right: 40px;
+  right: 30px;
 `;
 
 const ReceiveMessage = styled(Message)`
   background-color: #ebf1f7;
-  color: #5c6675;
+  color: #9eb1ce;
   display: inline-block;
-  left: 40px;
+  left: 30px;
 `;
 
 const UserImage = styled.img`
   width: 40px;
   height: 40px;
-  ${"" /* border: solid 1px black; */}
   position: relative;
   border-radius: 100%;
+  bottom: -13px;
 `;
 
 const SendImage = styled(UserImage)`
-  right: 20px;
+  right: 10px;
 `;
 
 const ReceiveImage = styled(UserImage)`
-  left: 20px;
+  left: 10px;
 `;
 
 const ChatroomDetailHeader = styled.div`
@@ -109,53 +119,46 @@ const ChatroomDetailHeader = styled.div`
   position: relative;
   top: 0;
   font-size: 22px;
+  font-weight: bold;
   line-height: 70px;
   text-align: center;
-  background-color: #ebf1f7;
-  ${
-    "" /* &:before {
-    content: "<<";
-    position: absolute;
-    left: 10px;
-    font-size: 18px;
-    letter-spacing: 1.5px;
-    cursor: pointer;
-  } */
-  }
+  background-color: #fff;
+  border-bottom: 1px solid #f6f9fb;
 `;
 
-const ChatroomDetailFooter = styled.div`
+const ChatroomDetailFooter = styled.form`
   width: 100%;
   height: 70px;
   position: relative;
   bottom: 0;
   background-color: #fff;
-  &:after {
-    content: ">>";
-    width: 45px;
-    height: 45px;
-    border-radius: 100%;
-    background-color: #2787f5;
-    position: absolute;
-    right: 10px;
-    top: 13px;
-    color: white;
-    text-align: center;
-    line-height: 45px;
-    cursor: pointer;
-  }
+`;
+
+const SubmitButton = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  border: none;
+  background-color: #2787f5;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  color: white;
+  text-align: center;
+  line-height: 45px;
+  cursor: pointer;
 `;
 
 const ChatroomInput = styled.input`
-  width: 390px;
+  width: 360px;
   height: 50px;
   top: 10px;
   left: 5px;
   position: relative;
   border: none;
-  border-radius: 10px;
+  border-radius: 25px;
   background-color: #ebf1f7;
-  padding-left: 10px;
+  padding-left: 15px;
   padding-right: 60px;
   color: #5c6675;
   font-size: 16px;
@@ -165,11 +168,31 @@ const ChatroomInput = styled.input`
   }
 `;
 
+const UserMessageTime = styled.div`
+  position: absolute;
+  color: #c3cfe1;
+  font-size: 12px;
+  min-width: 100px;
+  bottom: -15px;
+`;
+
+const SenderMessageTime = styled(UserMessageTime)`
+  right: 70px;
+  text-align: end;
+`;
+
+const ReceiverMessageTime = styled(UserMessageTime)`
+  left: 70px;
+`;
+
 const SendMessageAll = (props) => {
   return (
     <SendMessageWrapper>
       <SenderMessage>{props.allMessage.msg}</SenderMessage>
       <SendImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
+      <SenderMessageTime>
+        {props.allMessage.time || "10:39 AM"}
+      </SenderMessageTime>
     </SendMessageWrapper>
   );
 };
@@ -179,28 +202,23 @@ const ReceiverMessageAll = (props) => {
     <ReceiveMessageWrapper>
       <ReceiveImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
       <ReceiveMessage>{props.allMessage.msg}</ReceiveMessage>
+      <ReceiverMessageTime>
+        {props.allMessage.time || "10:39 AM"}
+      </ReceiverMessageTime>
     </ReceiveMessageWrapper>
   );
 };
 
-// =====================
+//
 
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
+  const [msg, setMsg] = useState();
   const { id } = useParams();
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
-
   const [allMessage, setAllMessage] = useState([
-    { self: false, msg: "hello" },
-    { self: true, msg: "hiiiiii" },
-    { self: true, msg: "how are you" },
-    { self: false, msg: "I want to go home" },
-    { self: false, msg: "I want to go home" },
-    { self: true, msg: "hiiiiii" },
-    { self: true, msg: "how are you" },
-    { self: true, msg: "hiiiiii" },
-    { self: true, msg: "how are you" },
+    { self: false, user: "User1", msg: "2 to 1" },
   ]);
 
   useEffect(() => {
@@ -210,21 +228,25 @@ const SecondHandProduct = () => {
         token: `Bearer ${userToken}`,
       },
     });
+  }, []);
+
+  if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
       console.log(data);
       let newMessage = [...allMessage, data];
       setAllMessage(newMessage);
     });
-  }, []);
+  }
 
   const sendMessageClick = (e) => {
     const request = {
       targetId: 1,
-      msg: e.target.value,
+      msg: msg,
     };
-    if (e.code === "Enter") {
-      socketRef.current.emit("private chat", request);
-    }
+    e.preventDefault();
+    socketRef.current.emit("private chat", request);
+    setMsg("");
+    console.log(e.target);
   };
 
   useEffect(() => {
@@ -300,17 +322,14 @@ const SecondHandProduct = () => {
               <ReceiverMessageAll allMessage={allMessage[index]} />
             );
           })}
-          {/* <SendMessageAll />
-          <ReceiverMessageAll />
-          <ReceiverMessageAll /> */}
         </ChatroomDetailMain>
-        <ChatroomDetailFooter>
+        <ChatroomDetailFooter onSubmit={(e) => sendMessageClick(e)}>
           <ChatroomInput
             placeholder="Type your message ..."
-            onKeyPress={(e) => {
-              sendMessageClick(e);
-            }}
+            onChange={(e) => setMsg(e.target.value)}
+            value={msg || ""}
           />
+          <SubmitButton id="submit">{"<<"}</SubmitButton>
         </ChatroomDetailFooter>
       </ChatroomDetailWrapper>
     </Wrapper>
