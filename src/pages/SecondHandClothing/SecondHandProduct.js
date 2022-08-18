@@ -337,7 +337,7 @@ const SendMessageAll = (props) => {
   return (
     <SendMessageWrapper>
       <SenderMessage>{props.allMessage.msg}</SenderMessage>
-      <SendImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
+      <SendImage src={props.allMessage.userImage} />
       <SenderMessageTime>
         {new Date(Date.parse(props.allMessage.time)).getHours()}:
         {new Date(Date.parse(props.allMessage.time)).getMinutes()}
@@ -349,7 +349,7 @@ const SendMessageAll = (props) => {
 const ReceiverMessageAll = (props) => {
   return (
     <ReceiveMessageWrapper>
-      <ReceiveImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
+      <ReceiveImage src={props.allMessage.userImage} />
       <ReceiveMessage>{props.allMessage.msg}</ReceiveMessage>
       <ReceiverMessageTime>
         {new Date(Date.parse(props.allMessage.time)).getHours()}:
@@ -380,42 +380,38 @@ const SecondHandProduct = () => {
   const { id } = useParams();
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
-  const [allMessage, setAllMessage] = useState([]);
-  const name = JSON.parse(localStorage.getItem("userList")) || [];
-
+  const profile = JSON.parse(localStorage.getItem("userProfile")) || [];
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
   const [chatpageSwitch, setChatpageSwitch] = useState(false);
-
   const [chatUserName, setChatUserName] = useState();
-
-  // const [chatUserAvatar, setChatUserAvatar] = useState(
-  //   secondHandProduct.sellerImage || ""
-  // );
+  const [allMessageObj, setAllMessageObj] = useState({});
+  const [targetId, setTargetId] = useState();
 
   const sendMessageClick = (e) => {
     const request = {
-      targetId: secondHandProduct.sellerId,
+      targetId: targetId,
       msg: msg,
     };
     e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
-    if (allMessage.length < 1) {
-      let userList = {
-        name: secondHandProduct.seller,
-        avatar: secondHandProduct.sellerImage,
-      };
-      if (!localStorage.getItem("userList")) {
-        localStorage.setItem("userList", JSON.stringify([userList]));
-      } else {
-        let arr = JSON.parse(localStorage.getItem("userList"));
-        arr.push(userList);
-        localStorage.setItem("userList", JSON.stringify(arr));
-      }
-    }
+
+    // if (allMessage.length < 1) {
+    //   let userList = {
+    //     name: secondHandProduct.seller,
+    //     avatar: secondHandProduct.sellerImage,
+    //   };
+    //   if (!localStorage.getItem("userList")) {
+    //     localStorage.setItem("userList", JSON.stringify([userList]));
+    //   } else {
+    //     let arr = JSON.parse(localStorage.getItem("userList"));
+    //     arr.push(userList);
+    //     localStorage.setItem("userList", JSON.stringify(arr));
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -426,13 +422,37 @@ const SecondHandProduct = () => {
       },
     });
   }, []);
+
   if (socketRef.current) {
     socketRef.current.on("private chat", (data) => {
-      let newMessage = [...allMessage, data];
-      setAllMessage(newMessage);
+      let nowperson;
+      if (data.user !== profile.user.name) {
+        setChatUserName((pre) => data.user);
+        nowperson = data.user;
+      }
+      if (!data.self) {
+        setTargetId(data.userId);
+      }
+
+      if (!allMessageObj.hasOwnProperty(nowperson || chatUserName)) {
+        setAllMessageObj({
+          ...allMessageObj,
+          [nowperson || chatUserName]: [data],
+        });
+      } else if (allMessageObj.hasOwnProperty(nowperson || chatUserName)) {
+        let personMessage = [...allMessageObj[nowperson || chatUserName], data];
+        setAllMessageObj({
+          ...allMessageObj,
+          [nowperson || chatUserName]: personMessage,
+        });
+      }
+      localStorage.setItem("chat", JSON.stringify(allMessageObj));
+      // let newMessage = [...allMessage, data];
+      // setAllMessage(newMessage);
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
+
   useEffect(() => {
     if (chatroom.current) {
       chatroom.current.scrollTop = chatroomScrollHeight;
@@ -446,6 +466,21 @@ const SecondHandProduct = () => {
     }
     getSecondHandProduct();
   }, [id]);
+
+  const clickAskButton = () => {
+    setChatpageSwitch(true);
+    setChatUserName(secondHandProduct.seller);
+    setTargetId(secondHandProduct.sellerId);
+    if (!allMessageObj.hasOwnProperty(secondHandProduct.user)) {
+      let newperson = {
+        ...allMessageObj,
+        [secondHandProduct.seller]: [],
+      };
+      setAllMessageObj(newperson);
+    }
+  };
+
+  console.log(targetId);
 
   if (!secondHandProduct) {
     return null;
@@ -482,8 +517,7 @@ const SecondHandProduct = () => {
           <AddToCart
             style={{ marginRight: "10px" }}
             onClick={() => {
-              setChatpageSwitch(true);
-              setChatUserName(secondHandProduct.seller);
+              clickAskButton();
             }}
           >
             聊聊詢問
@@ -527,12 +561,16 @@ const SecondHandProduct = () => {
           <ChatroomDetailHeader>{chatUserName}</ChatroomDetailHeader>
           {/* user name */}
           <ChatroomDetailMain ref={chatroom}>
-            {allMessage.map((message, index) => {
+            {allMessageObj?.[chatUserName]?.map((message, index) => {
               // user index => state
               return message.self ? (
-                <SendMessageAll allMessage={allMessage[index]} />
+                <SendMessageAll
+                  allMessage={allMessageObj[chatUserName][index]}
+                />
               ) : (
-                <ReceiverMessageAll allMessage={allMessage[index]} />
+                <ReceiverMessageAll
+                  allMessage={allMessageObj[chatUserName][index]}
+                />
               );
             })}
           </ChatroomDetailMain>
@@ -568,17 +606,25 @@ const SecondHandProduct = () => {
         </CloseChatroom>
         <ChatHeader>聊天</ChatHeader>
         <ChatBody>
-          {name.map((item, index) => (
+          {Object.keys(allMessageObj).map((item, index) => (
             <ChatItem
               key={index}
               onClick={(e) => {
                 setChatpageSwitch(true);
                 setChatSwitch(false);
-                setChatUserName(item.name);
+                setChatUserName(item);
+                setTargetId(allMessageObj[item][0].userId);
               }}
             >
-              <UserAvatar src={item.avatar}></UserAvatar>
-              <UserName>{item.name}</UserName>
+              <UserAvatar
+                src={
+                  allMessageObj[item][0]?.self
+                    ? allMessageObj[item][0]?.targetImage
+                    : allMessageObj[item][0]?.userImage
+                }
+                alt="hi"
+              ></UserAvatar>
+              <UserName>{item}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
             </ChatItem>
           ))}
