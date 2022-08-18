@@ -464,7 +464,7 @@ function Profile() {
   const [userToken, setUserToken] = useState(
     localStorage.getItem("userToken") || []
   );
-  const cartItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
+  // const cartItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
@@ -739,8 +739,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
     await getUserSecondHand(token);
-    api.addNewItemsInCart(cartItems, token);
-    localStorage.removeItem("cartItems");
+    // api.addNewItemsInCart(cartItems, token);
+    // localStorage.removeItem("cartItems");
   };
   const fbLogin = async () => {
     const data = {
@@ -763,8 +763,8 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
     getUserSecondHand(token);
-    api.addNewItemsInCart(cartItems, token);
-    localStorage.removeItem("cartItems");
+    // api.addNewItemsInCart(cartItems, token);
+    // localStorage.removeItem("cartItems");
   };
   const Logout = () => {
     localStorage.removeItem("userToken");
@@ -920,9 +920,9 @@ function Profile() {
   };
   const titleHandler = (e) => {
     setTitleID(e.target.id);
-    if (titleID == 2) {
-      getUserProfile(userToken);
-    }
+    // if (titleID == 2) {
+    //   getUserProfile(userToken);
+    // }
   };
   for (let item in launchProductList) {
     formData.append(item, launchProductList[item]);
@@ -934,13 +934,18 @@ function Profile() {
       password: "",
     });
   }, [isRegisterPage]);
-  console.log(valid);
   useEffect(() => {
     if (Object.values(uploaded).every((item) => item !== "")) {
       setIsUploaded(true);
     }
   }, [uploaded]);
-  console.log(profile);
+
+  useEffect(() => {
+    if (userToken.length > 0) {
+      getUserProfile(userToken);
+    }
+  }, []);
+
   window.document.body.onbeforeunload = function () {
     return "您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？";
   };
