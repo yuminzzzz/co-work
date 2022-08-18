@@ -284,7 +284,7 @@ const BiddingProduct = () => {
           userId: userToken,
           auctionId: id,
           room: id,
-          bid: productInfo.currentPrice + plusPrice,
+          bid: originPrice + plusPrice,
         };
         setPlusPrice(0);
         socketRef.current.emit("chat message", passMessage);
@@ -319,6 +319,7 @@ const BiddingProduct = () => {
         currentBidCount: data.currentBidCount,
       });
       nowPrice = data.currentPrice;
+      setOriginPrice(nowPrice);
     });
 
     socketRef.current.on("success", (data) => {

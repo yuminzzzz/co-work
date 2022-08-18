@@ -101,21 +101,21 @@ function Carousel() {
   const campaigns = [
     {
       id: 1,
-      product_id: 3,
+      product_id: 4,
       picture: "https://i.imgur.com/M9Ebx1s.png",
       story:
         "百變怪\r\n八月份競標主題\r\n變身成你想成為的樣子\r\n百變怪《hello》",
     },
     {
       id: 2,
-      product_id: 4,
+      product_id: 3,
       picture: "https://i.imgur.com/lCwR7XY.png",
       story:
         "卡比獸\r\n八月份競標主題\r\n只要可以吃 什麼都不在意\r\n卡比獸《大吃一斤》",
     },
     {
       id: 3,
-      product_id: 5,
+      product_id: 2,
       picture: "https://i.imgur.com/YOoIw0U.png",
       story:
         "卡比之星\r\n八月份競標主題\r\n把所有不喜歡的東西都吃吃吃掉！\r\n卡比《ho huiiiiii》",
