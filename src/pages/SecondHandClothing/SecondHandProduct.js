@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
 import { AddToCart } from "../Product/ProductVariants";
+import { useNavigate } from "react-router-dom";
 import {
   PriceWrapper,
   DetailTitle,
@@ -374,7 +375,7 @@ const FooterIcon = styled.div`
 
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
-  const [msg, setMsg] = useState();
+  const [msg, setMsg] = useState("");
   const chatroom = useRef();
   const [chatroomScrollHeight, setChatroomScrollHeight] = useState("");
   const { id } = useParams();
@@ -389,13 +390,15 @@ const SecondHandProduct = () => {
   const [chatUserName, setChatUserName] = useState();
   const [allMessageObj, setAllMessageObj] = useState({});
   const [targetId, setTargetId] = useState();
+  let navigate = useNavigate();
 
   const sendMessageClick = (e) => {
+    e.preventDefault();
+    if (msg === "") return;
     const request = {
       targetId: targetId,
       msg: msg,
     };
-    e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
 
@@ -453,6 +456,12 @@ const SecondHandProduct = () => {
     });
   }
 
+
+  // useEffect(() => {
+  //   let chat = { name: secondHandProduct.seller, chatRecord: allMessage };
+  //   localStorage.setItem("chatRecord", JSON.stringify(chat));
+  // }, [allMessage]);
+
   useEffect(() => {
     if (chatroom.current) {
       chatroom.current.scrollTop = chatroomScrollHeight;
@@ -485,6 +494,9 @@ const SecondHandProduct = () => {
   if (!secondHandProduct) {
     return null;
   }
+  // console.log(JSON.parse(localStorage.getItem("userList")));
+  // console.log(JSON.parse(localStorage.getItem("chatRecord")));
+  // console.log(allMessage);
 
   return (
     <Wrapper>
@@ -518,6 +530,12 @@ const SecondHandProduct = () => {
             style={{ marginRight: "10px" }}
             onClick={() => {
               clickAskButton();
+              if (!userToken) {
+                alert("請先登入");
+                navigate("/profile");
+              }
+              setChatpageSwitch(true);
+              setChatUserName(secondHandProduct.seller);
             }}
           >
             聊聊詢問
@@ -588,16 +606,18 @@ const SecondHandProduct = () => {
       )}
 
       {/* chatmainpage */}
-      <ChatIcon
-        onClick={() => setChatSwitch(true)}
-        style={
-          chatSwitch || chatpageSwitch
-            ? { display: "none" }
-            : { display: "flex" }
-        }
-      >
-        <FontAwesomeIcon icon={faComments} />
-      </ChatIcon>
+      {userToken && (
+        <ChatIcon
+          onClick={() => setChatSwitch(true)}
+          style={
+            chatSwitch || chatpageSwitch
+              ? { display: "none" }
+              : { display: "flex" }
+          }
+        >
+          <FontAwesomeIcon icon={faComments} />
+        </ChatIcon>
+      )}
       <ChatContainer
         style={chatSwitch ? { display: "block" } : { display: "none" }}
       >
