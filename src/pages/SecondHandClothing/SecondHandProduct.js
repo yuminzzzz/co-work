@@ -337,7 +337,7 @@ const SendMessageAll = (props) => {
   return (
     <SendMessageWrapper>
       <SenderMessage>{props.allMessage.msg}</SenderMessage>
-      <SendImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
+      <SendImage src={props.allMessage.userImage} />
       <SenderMessageTime>
         {new Date(Date.parse(props.allMessage.time)).getHours()}:
         {new Date(Date.parse(props.allMessage.time)).getMinutes()}
@@ -349,7 +349,7 @@ const SendMessageAll = (props) => {
 const ReceiverMessageAll = (props) => {
   return (
     <ReceiveMessageWrapper>
-      <ReceiveImage src="https://claudia-teng.com/assets/second-hand/20220811.png" />
+      <ReceiveImage src={props.allMessage.userImage} />
       <ReceiveMessage>{props.allMessage.msg}</ReceiveMessage>
       <ReceiverMessageTime>
         {new Date(Date.parse(props.allMessage.time)).getHours()}:
@@ -446,6 +446,7 @@ const SecondHandProduct = () => {
           [nowperson || chatUserName]: personMessage,
         });
       }
+      localStorage.setItem("chat", JSON.stringify(allMessageObj));
       // let newMessage = [...allMessage, data];
       // setAllMessage(newMessage);
       setChatroomScrollHeight(chatroom.current.scrollHeight);
@@ -478,6 +479,8 @@ const SecondHandProduct = () => {
       setAllMessageObj(newperson);
     }
   };
+
+  console.log(targetId);
 
   if (!secondHandProduct) {
     return null;
@@ -613,7 +616,14 @@ const SecondHandProduct = () => {
                 setTargetId(allMessageObj[item][0].userId);
               }}
             >
-              <UserAvatar src={item.avatar}></UserAvatar>
+              <UserAvatar
+                src={
+                  allMessageObj[item][0]?.self
+                    ? allMessageObj[item][0]?.targetImage
+                    : allMessageObj[item][0]?.userImage
+                }
+                alt="hi"
+              ></UserAvatar>
               <UserName>{item}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
             </ChatItem>
