@@ -654,9 +654,7 @@ function Profile() {
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
-    getUserProfile(token);
-    api.addNewItemsInCart(cartItems, token);
-    localStorage.removeItem("cartItems");
+    await getUserProfile(token);
   };
   const getUserProfile = async (token) => {
     const response = await fetch(
