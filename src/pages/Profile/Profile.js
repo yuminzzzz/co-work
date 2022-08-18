@@ -651,7 +651,6 @@ function Profile() {
       }
     );
 
-
     if (response.status === 403) {
       alert("此帳號已被註冊過，請使用新的帳號密碼");
       return;
@@ -921,6 +920,9 @@ function Profile() {
   };
   const titleHandler = (e) => {
     setTitleID(e.target.id);
+    if (titleID == 2) {
+      getUserProfile(userToken);
+    }
   };
   for (let item in launchProductList) {
     formData.append(item, launchProductList[item]);
@@ -938,7 +940,7 @@ function Profile() {
       setIsUploaded(true);
     }
   }, [uploaded]);
-
+  console.log(profile);
   window.document.body.onbeforeunload = function () {
     return "您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？";
   };
@@ -1053,7 +1055,7 @@ function Profile() {
                         <input
                           type="file"
                           multiple
-                          accept="image/png, image/jpeg"
+                          accept="image/png, image/jpeg, image/gif"
                           style={{
                             display: "none",
                           }}
