@@ -920,9 +920,9 @@ function Profile() {
   };
   const titleHandler = (e) => {
     setTitleID(e.target.id);
-    if (titleID == 2) {
-      getUserProfile(userToken);
-    }
+    // if (titleID == 2) {
+    //   getUserProfile(userToken);
+    // }
   };
   for (let item in launchProductList) {
     formData.append(item, launchProductList[item]);
