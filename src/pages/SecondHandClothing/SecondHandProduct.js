@@ -614,9 +614,9 @@ const SecondHandProduct = () => {
                 src={
                   allMessageObj[item][0]?.self
                     ? allMessageObj[item][0]?.targetImage
-                    : allMessageObj[item][0]?.userImage
+                    : allMessageObj[item][0]?.userImage ||
+                      "https://claudia-teng.com/assets/user.jpg"
                 }
-                alt="hi"
               ></UserAvatar>
               <UserName>{item}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>
