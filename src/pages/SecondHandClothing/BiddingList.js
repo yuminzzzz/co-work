@@ -60,8 +60,8 @@ const EndAlert = styled.div`
   width: 230px;
   height: 230px;
   border-radius: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  top: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -70%);
   &:before {
@@ -142,7 +142,7 @@ const BiddingList = (props) => {
               <span
                 style={{
                   color: "red",
-                  fontSize: "25px",
+                  fontSize: "22px",
                   fontWeight: "bold",
                 }}
               >
