@@ -651,7 +651,6 @@ function Profile() {
       }
     );
     const responseData = await response.json();
-
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
@@ -758,6 +757,7 @@ function Profile() {
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userSecondHand");
     localStorage.removeItem("userList");
+    localStorage.removeItem("chat");
     setUserToken([]);
     setProfile(null);
     setSecondHand([]);
