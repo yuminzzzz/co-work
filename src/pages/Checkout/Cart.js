@@ -223,7 +223,6 @@ function Cart() {
     getUserCartItem(userToken);
   }, []);
 
-  console.log(items);
   if (items) {
     return (
       <>

@@ -4,6 +4,7 @@ import api from "../../utils/api";
 import styled from "styled-components";
 import io from "socket.io-client";
 import { AddToCart } from "../Product/ProductVariants";
+import { useNavigate } from "react-router-dom";
 import {
   PriceWrapper,
   DetailTitle,
@@ -374,7 +375,7 @@ const FooterIcon = styled.div`
 
 const SecondHandProduct = () => {
   const [secondHandProduct, setSecondHandProduct] = useState();
-  const [msg, setMsg] = useState();
+  const [msg, setMsg] = useState("");
   const chatroom = useRef();
   const [chatroomScrollHeight, setChatroomScrollHeight] = useState("");
   const { id } = useParams();
@@ -384,34 +385,23 @@ const SecondHandProduct = () => {
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
-  const cart = useContext(CartContext);
   const [chatpageSwitch, setChatpageSwitch] = useState(false);
   const [chatUserName, setChatUserName] = useState();
-  const [allMessageObj, setAllMessageObj] = useState({});
+  const [allMessageObj, setAllMessageObj] = useState(
+    JSON.parse(localStorage.getItem("chat")) || {}
+  );
   const [targetId, setTargetId] = useState();
+  let navigate = useNavigate();
 
   const sendMessageClick = (e) => {
+    e.preventDefault();
+    if (msg === "") return;
     const request = {
       targetId: targetId,
       msg: msg,
     };
-    e.preventDefault();
     socketRef.current.emit("private chat", request);
     setMsg("");
-
-    // if (allMessage.length < 1) {
-    //   let userList = {
-    //     name: secondHandProduct.seller,
-    //     avatar: secondHandProduct.sellerImage,
-    //   };
-    //   if (!localStorage.getItem("userList")) {
-    //     localStorage.setItem("userList", JSON.stringify([userList]));
-    //   } else {
-    //     let arr = JSON.parse(localStorage.getItem("userList"));
-    //     arr.push(userList);
-    //     localStorage.setItem("userList", JSON.stringify(arr));
-    //   }
-    // }
   };
 
   useEffect(() => {
@@ -447,8 +437,6 @@ const SecondHandProduct = () => {
         });
       }
       localStorage.setItem("chat", JSON.stringify(allMessageObj));
-      // let newMessage = [...allMessage, data];
-      // setAllMessage(newMessage);
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
@@ -479,8 +467,6 @@ const SecondHandProduct = () => {
       setAllMessageObj(newperson);
     }
   };
-
-  console.log(targetId);
 
   if (!secondHandProduct) {
     return null;
@@ -518,6 +504,12 @@ const SecondHandProduct = () => {
             style={{ marginRight: "10px" }}
             onClick={() => {
               clickAskButton();
+              if (!userToken) {
+                alert("請先登入");
+                navigate("/profile");
+              }
+              setChatpageSwitch(true);
+              setChatUserName(secondHandProduct.seller);
             }}
           >
             聊聊詢問
@@ -588,16 +580,18 @@ const SecondHandProduct = () => {
       )}
 
       {/* chatmainpage */}
-      <ChatIcon
-        onClick={() => setChatSwitch(true)}
-        style={
-          chatSwitch || chatpageSwitch
-            ? { display: "none" }
-            : { display: "flex" }
-        }
-      >
-        <FontAwesomeIcon icon={faComments} />
-      </ChatIcon>
+      {userToken && (
+        <ChatIcon
+          onClick={() => setChatSwitch(true)}
+          style={
+            chatSwitch || chatpageSwitch
+              ? { display: "none" }
+              : { display: "flex" }
+          }
+        >
+          <FontAwesomeIcon icon={faComments} />
+        </ChatIcon>
+      )}
       <ChatContainer
         style={chatSwitch ? { display: "block" } : { display: "none" }}
       >
@@ -620,9 +614,9 @@ const SecondHandProduct = () => {
                 src={
                   allMessageObj[item][0]?.self
                     ? allMessageObj[item][0]?.targetImage
-                    : allMessageObj[item][0]?.userImage
+                    : allMessageObj[item][0]?.userImage ||
+                      "https://claudia-teng.com/assets/user.jpg"
                 }
-                alt="hi"
               ></UserAvatar>
               <UserName>{item}</UserName>
               <ReceiveTime>12:45 PM</ReceiveTime>

@@ -651,11 +651,13 @@ function Profile() {
       }
     );
     const responseData = await response.json();
+
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
   };
+
   const getUserProfile = async (token) => {
     const response = await fetch(
       "https://claudia-teng.com/api/1.0/user/profile",
@@ -670,6 +672,7 @@ function Profile() {
     localStorage.setItem("userProfile", JSON.stringify(data));
     setProfile(JSON.parse(localStorage.getItem("userProfile")));
   };
+
   const getUserSecondHand = async (token) => {
     const response = await fetch(
       "https://claudia-teng.com/api/1.0/second-hand/user",
@@ -754,7 +757,7 @@ function Profile() {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userSecondHand");
-    localStorage.removeItem("userList")
+    localStorage.removeItem("userList");
     setUserToken([]);
     setProfile(null);
     setSecondHand([]);
