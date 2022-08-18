@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import api from "../../utils/api";
 import getJwtToken from "../../utils/getJwtToken";
 import logo from "./logo.png";
 import trash from "./cart-remove.png";
+import api from "../../utils/api";
 
 const Wrapper = styled.div`
   min-height: calc(100vh - 255px);
@@ -134,10 +133,19 @@ const ReturnLastPage = styled.div`
 
 const UserProfile = styled.div`
   width: 1280px;
+  @media screen and (max-width: 1279px) {
+    width: 80%;
+    min-width: 360px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+  }
 `;
 
 const UserProfileContainer = styled.div`
   display: flex;
+  @media screen and (max-width: 1279px) {
+    flex-direction: column;
+  }
 `;
 
 const UserInfoContainer = styled.div`
@@ -151,6 +159,13 @@ const UserInfoContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 20px;
+  @media screen and (max-width: 1279px) {
+    width: 100%;
+    height: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
 `;
 
 const UserAvatar = styled.img`
@@ -205,10 +220,20 @@ const InfoContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 70px;
+  @media screen and (max-width: 1279px) {
+    width: 100%;
+    padding: 30px;
+  }
 `;
 
 const InfoHead = styled.div`
   width: 100%;
+  @media screen and (max-width: 1279px) {
+    display: flex;
+  }
+  @media screen and (max-width: 540px) {
+    flex-direction: column;
+  }
 `;
 
 const InfoHeadButton = styled.button`
@@ -226,6 +251,9 @@ const InfoHeadButton = styled.button`
   padding: 0;
   padding-bottom: 5px;
   border-radius: 6px;
+  @media screen and (max-width: 540px) {
+    width: 100%;
+  }
 `;
 
 const InfoBody = styled.div`
@@ -317,6 +345,9 @@ const LaunchBody = styled.div`
   background-color: rgb(255, 99, 71, 0.3);
   cursor: pointer;
   border: dashed 2px salmon;
+  @media screen and (max-width: 950px) {
+    ${(props) => props.$isUploaded && "display: none;"}
+  }
 `;
 
 const LaunchBodyContent = styled.label`
@@ -358,6 +389,14 @@ const PhotoContainer = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
+  overflow-y: hidden;
+  @media screen and (max-width: 950px) {
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow-y: scroll;
+  }
 `;
 
 const Photo = styled.img`
@@ -366,6 +405,9 @@ const Photo = styled.img`
   border-radius: 6px;
   border: dashed 2px salmon;
   object-fit: cover;
+  @media screen and (max-width: 950px) {
+    height: auto;
+  }
 `;
 
 // product info
@@ -381,6 +423,10 @@ const ProductContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  @media screen and (max-width: 950px) {
+    width: 100%;
+    position: relative;
+  }
 `;
 
 const ProductDetailInput = styled.input`
@@ -418,6 +464,7 @@ function Profile() {
   const [userToken, setUserToken] = useState(
     localStorage.getItem("userToken") || []
   );
+  const cartItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
   const [isRegisterPage, setIsRegisterPage] = useState(false);
   const [valid, setValid] = useState({
     name: "",
@@ -463,9 +510,34 @@ function Profile() {
         return { width: "100%" };
       }
     },
+    photoContainerWidthMobile() {
+      if (isUploaded && device === "mobile") {
+        return { width: "100%" };
+      } else if (isUploaded) {
+        return { width: "50%" };
+      } else {
+        return { width: "100%" };
+      }
+    },
 
     headButton: ["上架商品", "我的商品", "已得標"],
   };
+  const [device, setDevice] = useState();
+  const useRWD = () => {
+    const handleRWD = () => {
+      if (window.innerWidth < 950) setDevice("mobile");
+      else setDevice("PC");
+    };
+
+    useEffect(() => {
+      setDevice(window.innerWidth < 950 ? "mobile" : "PC");
+      window.addEventListener("resize", handleRWD);
+      return () => {
+        window.removeEventListener("resize", handleRWD);
+      };
+    }, []);
+  };
+  useRWD();
   const validation = (e) => {
     if (e.target.placeholder === "請輸入名字") {
       if (e.target.value) {
@@ -578,12 +650,24 @@ function Profile() {
         method: "POST",
       }
     );
+
+
+    if (response.status === 403) {
+      alert("此帳號已被註冊過，請使用新的帳號密碼");
+      return;
+    }
     const responseData = await response.json();
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
-    getUserProfile(token);
+    await getUserProfile(token);
+    setValid({
+      name: "",
+      account: "",
+      password: "",
+    });
   };
+
   const getUserProfile = async (token) => {
     const response = await fetch(
       "https://claudia-teng.com/api/1.0/user/profile",
@@ -598,6 +682,7 @@ function Profile() {
     localStorage.setItem("userProfile", JSON.stringify(data));
     setProfile(JSON.parse(localStorage.getItem("userProfile")));
   };
+
   const getUserSecondHand = async (token) => {
     const response = await fetch(
       "https://claudia-teng.com/api/1.0/second-hand/user",
@@ -645,12 +730,18 @@ function Profile() {
         method: "POST",
       }
     );
+    if (response.status === 403) {
+      alert("帳號或密碼輸入錯誤，請重新再試一次");
+      return;
+    }
     const responseData = await response.json();
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
     await getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const fbLogin = async () => {
     const data = {
@@ -673,11 +764,15 @@ function Profile() {
     setUserToken(localStorage.getItem("userToken"));
     getUserProfile(token);
     getUserSecondHand(token);
+    api.addNewItemsInCart(cartItems, token);
+    localStorage.removeItem("cartItems");
   };
   const Logout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userProfile");
     localStorage.removeItem("userSecondHand");
+    localStorage.removeItem("userList");
+    localStorage.removeItem("chat");
     setUserToken([]);
     setProfile(null);
     setSecondHand([]);
@@ -837,11 +932,16 @@ function Profile() {
       password: "",
     });
   }, [isRegisterPage]);
+  console.log(valid);
   useEffect(() => {
     if (Object.values(uploaded).every((item) => item !== "")) {
       setIsUploaded(true);
     }
   }, [uploaded]);
+
+  window.document.body.onbeforeunload = function () {
+    return "您尚未將編輯過的表單資料送出，請問您確定要離開網頁嗎？";
+  };
 
   return (
     <Wrapper>
@@ -880,9 +980,7 @@ function Profile() {
                 以facebook登入
               </FacebookLoginButton>
               <Divider></Divider>
-              <RegisterButton
-                onClick={() => setIsRegisterPage(true)}
-              >
+              <RegisterButton onClick={() => setIsRegisterPage(true)}>
                 建立新帳號
               </RegisterButton>
             </>
@@ -947,7 +1045,10 @@ function Profile() {
               <InfoBody style={styling.flexDirection()}>
                 {titleID == 0 && (
                   <>
-                    <LaunchBody style={styling.uploaded()}>
+                    <LaunchBody
+                      style={styling.uploaded()}
+                      $isUploaded={isUploaded}
+                    >
                       <LaunchBodyContent>
                         <input
                           type="file"
@@ -961,11 +1062,14 @@ function Profile() {
                           }}
                         ></input>
                         <LaunchButton>選擇照片</LaunchButton>
-                        <LaunchPrompt>(最多上傳3張照片)</LaunchPrompt>
+                        <LaunchPrompt>（請上傳 3 張照片）</LaunchPrompt>
                       </LaunchBodyContent>
                     </LaunchBody>
+
                     {uploaded.first && (
-                      <PhotoContainer style={styling.photoContainerWidth()}>
+                      <PhotoContainer
+                        style={styling.photoContainerWidthMobile()}
+                      >
                         <Photo
                           src={
                             uploaded.first &&

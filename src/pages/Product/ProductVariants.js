@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
-
+import api from "../../utils/api";
 import add from "./add.png";
 import minus from "./minus.png";
 import CartContext from "../../contexts/CartContext";
@@ -108,6 +108,8 @@ const AddToCart = styled.button`
   letter-spacing: 4px;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
+  border-radius: 20px;
 
   @media screen and (max-width: 1279px) {
     height: 44px;
@@ -115,6 +117,9 @@ const AddToCart = styled.button`
     font-size: 16px;
     letter-spacing: 3.2px;
     color: white;
+  }
+  &:hover {
+    background-color: #69523d;
   }
 `;
 
@@ -125,6 +130,7 @@ function ProductVariants({ product }) {
   const [selectedSize, setSelectedSize] = useState();
   const [quantity, setQuantity] = useState(1);
   const cart = useContext(CartContext);
+  const userToken = localStorage.getItem("userToken") || "";
 
   function getStock(colorCode, size) {
     return product.variants.find(
@@ -132,13 +138,8 @@ function ProductVariants({ product }) {
     ).stock;
   }
 
-  function addToCart() {
-    if (!selectedSize) {
-      window.alert("請選擇尺寸");
-      return;
-    }
-
-    cart.addItem({
+  async function addToCart(token) {
+    const item = {
       color: product.colors.find((color) => color.code === selectedColorCode),
       id: product.id,
       isStylish: true,
@@ -148,8 +149,19 @@ function ProductVariants({ product }) {
       qty: quantity,
       size: selectedSize,
       stock: getStock(selectedColorCode, selectedSize),
-    });
+      seller: "Stylish",
+    };
+
+    if (!selectedSize) {
+      window.alert("請選擇尺寸");
+      return;
+    } else if (!userToken) {
+      cart.addItem(item);
+    } else {
+      await api.addNewItemsInCart(item, token);
+    }
   }
+
   return (
     <>
       <Option>
@@ -207,7 +219,7 @@ function ProductVariants({ product }) {
           />
         </QuantitySelector>
       </Option>
-      <AddToCart onClick={addToCart}>
+      <AddToCart onClick={() => addToCart(userToken)}>
         {selectedSize ? "加入購物車" : "請選擇尺寸"}
       </AddToCart>
     </>

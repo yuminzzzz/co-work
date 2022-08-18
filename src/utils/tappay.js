@@ -1,9 +1,9 @@
 const tappay = {
   setupSDK() {
     window.TPDirect.setupSDK(
-      '12348',
-      'app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF',
-      'sandbox'
+      "12348",
+      "app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF",
+      "sandbox"
     );
   },
   setupCard(numberElement, expirationDateElement, ccvElement) {
@@ -11,23 +11,23 @@ const tappay = {
       fields: {
         number: {
           element: numberElement,
-          placeholder: '**** **** **** ****',
+          placeholder: "**** **** **** ****",
         },
         expirationDate: {
           element: expirationDateElement,
-          placeholder: 'MM / YY',
+          placeholder: "MM / YY",
         },
         ccv: {
           element: ccvElement,
-          placeholder: '後三碼',
+          placeholder: "後三碼",
         },
       },
       styles: {
-        '.valid': {
-          color: 'green',
+        ".valid": {
+          color: "green",
         },
-        '.invalid': {
-          color: 'red',
+        ".invalid": {
+          color: "red",
         },
       },
     });
