@@ -385,10 +385,11 @@ const SecondHandProduct = () => {
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
-  const cart = useContext(CartContext);
   const [chatpageSwitch, setChatpageSwitch] = useState(false);
   const [chatUserName, setChatUserName] = useState();
-  const [allMessageObj, setAllMessageObj] = useState({});
+  const [allMessageObj, setAllMessageObj] = useState(
+    JSON.parse(localStorage.getItem("chat")) || {}
+  );
   const [targetId, setTargetId] = useState();
   let navigate = useNavigate();
 
@@ -401,20 +402,6 @@ const SecondHandProduct = () => {
     };
     socketRef.current.emit("private chat", request);
     setMsg("");
-
-    // if (allMessage.length < 1) {
-    //   let userList = {
-    //     name: secondHandProduct.seller,
-    //     avatar: secondHandProduct.sellerImage,
-    //   };
-    //   if (!localStorage.getItem("userList")) {
-    //     localStorage.setItem("userList", JSON.stringify([userList]));
-    //   } else {
-    //     let arr = JSON.parse(localStorage.getItem("userList"));
-    //     arr.push(userList);
-    //     localStorage.setItem("userList", JSON.stringify(arr));
-    //   }
-    // }
   };
 
   useEffect(() => {
@@ -450,17 +437,9 @@ const SecondHandProduct = () => {
         });
       }
       localStorage.setItem("chat", JSON.stringify(allMessageObj));
-      // let newMessage = [...allMessage, data];
-      // setAllMessage(newMessage);
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
-
-
-  // useEffect(() => {
-  //   let chat = { name: secondHandProduct.seller, chatRecord: allMessage };
-  //   localStorage.setItem("chatRecord", JSON.stringify(chat));
-  // }, [allMessage]);
 
   useEffect(() => {
     if (chatroom.current) {
@@ -489,14 +468,9 @@ const SecondHandProduct = () => {
     }
   };
 
-  console.log(targetId);
-
   if (!secondHandProduct) {
     return null;
   }
-  // console.log(JSON.parse(localStorage.getItem("userList")));
-  // console.log(JSON.parse(localStorage.getItem("chatRecord")));
-  // console.log(allMessage);
 
   return (
     <Wrapper>
