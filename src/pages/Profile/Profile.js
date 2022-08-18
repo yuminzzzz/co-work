@@ -650,11 +650,22 @@ function Profile() {
         method: "POST",
       }
     );
+
+
+    if (response.status === 403) {
+      alert("此帳號已被註冊過，請使用新的帳號密碼");
+      return;
+    }
     const responseData = await response.json();
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
     setUserToken(localStorage.getItem("userToken"));
     await getUserProfile(token);
+    setValid({
+      name: "",
+      account: "",
+      password: "",
+    });
   };
 
   const getUserProfile = async (token) => {
@@ -719,6 +730,10 @@ function Profile() {
         method: "POST",
       }
     );
+    if (response.status === 403) {
+      alert("帳號或密碼輸入錯誤，請重新再試一次");
+      return;
+    }
     const responseData = await response.json();
     const token = responseData.data.access_token;
     localStorage.setItem("userToken", token);
@@ -917,6 +932,7 @@ function Profile() {
       password: "",
     });
   }, [isRegisterPage]);
+  console.log(valid);
   useEffect(() => {
     if (Object.values(uploaded).every((item) => item !== "")) {
       setIsUploaded(true);
