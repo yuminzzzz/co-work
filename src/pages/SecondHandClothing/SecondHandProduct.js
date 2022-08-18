@@ -380,23 +380,17 @@ const SecondHandProduct = () => {
   const { id } = useParams();
   const socketRef = useRef();
   const userToken = localStorage.getItem("userToken") || "";
-  const [allMessage, setAllMessage] = useState([]);
-  const name = JSON.parse(localStorage.getItem("userList")) || [];
   const profile = JSON.parse(localStorage.getItem("userProfile")) || [];
-
   const icon = [faPenToSquare, faPersonSkiing, faMessage, faBell, faBars];
   const [titleID, setTitleID] = useState(2);
   const [chatSwitch, setChatSwitch] = useState(false);
   const cart = useContext(CartContext);
   const [chatpageSwitch, setChatpageSwitch] = useState(false);
-
   const [chatUserName, setChatUserName] = useState();
   const [allMessageObj, setAllMessageObj] = useState({});
-
   const [targetId, setTargetId] = useState();
 
   const sendMessageClick = (e) => {
-    console.log("```````````");
     const request = {
       targetId: targetId,
       msg: msg,
@@ -405,22 +399,20 @@ const SecondHandProduct = () => {
     socketRef.current.emit("private chat", request);
     setMsg("");
 
-    if (allMessage.length < 1) {
-      let userList = {
-        name: secondHandProduct.seller,
-        avatar: secondHandProduct.sellerImage,
-      };
-      if (!localStorage.getItem("userList")) {
-        localStorage.setItem("userList", JSON.stringify([userList]));
-      } else {
-        let arr = JSON.parse(localStorage.getItem("userList"));
-        arr.push(userList);
-        localStorage.setItem("userList", JSON.stringify(arr));
-      }
-    }
+    // if (allMessage.length < 1) {
+    //   let userList = {
+    //     name: secondHandProduct.seller,
+    //     avatar: secondHandProduct.sellerImage,
+    //   };
+    //   if (!localStorage.getItem("userList")) {
+    //     localStorage.setItem("userList", JSON.stringify([userList]));
+    //   } else {
+    //     let arr = JSON.parse(localStorage.getItem("userList"));
+    //     arr.push(userList);
+    //     localStorage.setItem("userList", JSON.stringify(arr));
+    //   }
+    // }
   };
-  console.log(allMessageObj);
-  console.log(targetId);
 
   useEffect(() => {
     socketRef.current = io.connect("https://claudia-teng.com/", {
@@ -454,8 +446,8 @@ const SecondHandProduct = () => {
           [nowperson || chatUserName]: personMessage,
         });
       }
-      let newMessage = [...allMessage, data];
-      setAllMessage(newMessage);
+      // let newMessage = [...allMessage, data];
+      // setAllMessage(newMessage);
       setChatroomScrollHeight(chatroom.current.scrollHeight);
     });
   }
