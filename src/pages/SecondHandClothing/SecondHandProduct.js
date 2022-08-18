@@ -619,7 +619,6 @@ const SecondHandProduct = () => {
                 }
               ></UserAvatar>
               <UserName>{item}</UserName>
-              <ReceiveTime>12:45 PM</ReceiveTime>
             </ChatItem>
           ))}
         </ChatBody>

@@ -65,7 +65,7 @@ const ID = styled.div`
 const Price = styled.div`
   line-height: 36px;
   margin-top: 40px;
-  font-size: 30px;
+  font-size: 25px;
   color: #3f3a3a;
   padding-bottom: 20px;
   border-bottom: 1px solid #3f3a3a;
