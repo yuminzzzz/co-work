@@ -238,6 +238,10 @@ const BiddingProduct = () => {
   const [bidInfo, setBidInfo] = useState("");
   const [bidSuccessInfoTime, setBidSuccessInfoTime] = useState(5);
   const [bidFailInfoTime, setBidFailInfoTime] = useState(3);
+  const [originPrice, setOriginPrice] = useState(0);
+  let nowPrice;
+  // click button => 變數改變
+  console.log(originPrice);
   const popUpImages = {
     success:
       "https://github.com/yuminzzzz/co-work/blob/feature/socket-io-2/public/img/bidSuccess-removebg-preview.png?raw=true",
@@ -314,8 +318,11 @@ const BiddingProduct = () => {
         currentPrice: data.currentPrice,
         currentBidCount: data.currentBidCount,
       });
+      nowPrice = data.currentPrice;
     });
+
     socketRef.current.on("success", (data) => {
+      setOriginPrice(nowPrice);
       setBidSuccessInfoTime(5);
       setBidSuccess(true);
       const coundDownTimer = setInterval(() => {
@@ -353,6 +360,7 @@ const BiddingProduct = () => {
     async function getAuctionProduct() {
       const data = await api.getAuctionProduct(id);
       setAuctionProduct(data);
+      setOriginPrice(data.currentPrice);
       setProductInfo({
         currentUser: data.currentUser,
         currentPrice: data.currentPrice,
@@ -360,7 +368,7 @@ const BiddingProduct = () => {
       });
     }
     getAuctionProduct();
-  }, [id]);
+  }, []);
 
   if (!auctionProduct) {
     return null;
@@ -471,7 +479,7 @@ const BiddingProduct = () => {
                 ? !disabled
                   ? "請點擊按鈕進行出價"
                   : "此商品競標已截止"
-                : `${plusPrice + productInfo.currentPrice}`}
+                : `${plusPrice + originPrice}`}
             </UserNowBiddingPrice>
             <BiddingButton
               disabled={disabled}
