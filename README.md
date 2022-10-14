@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+<div align="center">
+<picture><img src="https://stylish-zzuhann.web.app/img/logo.png" alt="stylish" width="200"/></picture>
+<br/>
+<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span>
+</div>
+<h2 id="Intro">Intro</h2>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An E-commerce website providing a comprehensive shopping experience, from sign-in (Facebook SDK), browsing and searching for products of different categories, adding to the shopping cart, and checkout.💡
 
-## Available Scripts
+<h2 id="Tech">Tech</h2>
+<span><picture><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="reactJS"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white" alt="styledcomponent"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white" alt="reactRouter"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/Socket.io-010101?&style=for-the-badge&logo=Socket.io&logoColor=white" alt="socketIO"></picture></span>
+<span><picture><img src="https://img.shields.io/badge/Webpack-8DD6F9?style=for-the-badge&logo=Webpack&logoColor=white" alt="webpack"></picture></span>
 
-In the project directory, you can run:
+<h2 id="Features">Features</h2>
+<ul>
+  <li>Fulfilled bidding feature and created a chat room by <b>Socket.IO</b></li>
+  <li>Developed the home page with vanilla JavaScript and other pages with React and styled-components</li>
+  <li>Controlled and stored customers' shopping cart data through localStorage</li>
+  <li>Fetched <b>RESTful API</b> and rendered products’ info on the page</li>
+  <li>Connected to third-party APIs (Facebook login and TapPay), which enabled customers to log in and check out quickly</li>
+  <li>Built the environment of creat-react-app with <b>Webpack</b> (with babel and dev server)</li>
+</ul>
 
-### `npm start`
+<h2 id="Demo">Demo</h2>
+<p>▼ Log in: users can choose native log in/sign up or Facebook log in</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E7%99%BB%E5%85%A5.png?raw=true"/>
+</picture>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<p>▼ Launching second-hand products</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E4%B8%8A%E6%9E%B6%E5%95%86%E5%93%81.png?raw=true"/>
+</picture>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<p>▼ All users products on the market</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E6%88%91%E7%9A%84%E4%B8%8A%E6%9E%B6%E5%95%86%E5%93%81.png?raw=true"/>
+</picture>
 
-### `npm test`
+<p>▼ Second-hands products section: showing the topic of bidding through carousels</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E4%BA%8C%E6%89%8B%E8%A1%A3%E5%B0%88%E5%8D%80%20%E7%AB%B6%E6%A8%99%E4%B8%BB%E9%A1%8C.png?raw=true"/>
+</picture>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p>▼ Current bidding products</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E7%AB%B6%E6%A8%99%E5%B0%88%E5%8D%80.png?raw=true"/>
+</picture>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E7%AB%B6%E6%A8%99%E4%B8%AD%E7%94%A2%E5%93%81.png?raw=true"/>
+</picture>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E5%87%BA%E5%83%B9%E6%88%90%E5%8A%9F%E6%95%88%E6%9E%9C.png?raw=true"/>
+</picture>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E7%AB%B6%E6%A8%99%E7%B5%90%E6%9D%9F.png?raw=true"/>
+</picture>
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<p>▼ Users' successful bidding products</p>
+<picture>
+<img src="https://github.com/zzuhann/fluffyStorage/blob/main/%E5%BE%97%E6%A8%99%E5%95%86%E5%93%81.png?raw=true"/>
+</picture>
