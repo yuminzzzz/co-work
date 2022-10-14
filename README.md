@@ -1,7 +1,7 @@
 <div align="center">
 <picture><img src="https://stylish-zzuhann.web.app/img/logo.png" alt="stylish" width="200"/></picture>
 <br/>
-<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Flow_Chart">Flow Chart</a></span> | <span><a href="#Demo">Demo</a></span>
+<span><a href="#Intro">Intro</a></span> | <span><a href="#Tech">Tech</a></span> | <span><a href="#Features">Features</a></span> | <span><a href="#Demo">Demo</a></span>
 </div>
 <h2 id="Intro">Intro</h2>
 
